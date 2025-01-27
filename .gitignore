@@ -1,0 +1,19 @@
+# Node dependency directory
+node_modules/
+
+# Environment files
+.env
+
+# Log files
+*.log
+
+# build output directory
+dist/
+
+# Local development
+local/
+.vscode*
+
+# Definições de execução local
+docker-compose.override.yml
+*.fake.*

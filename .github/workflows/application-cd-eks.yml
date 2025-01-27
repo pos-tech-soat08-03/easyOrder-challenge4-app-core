@@ -1,0 +1,139 @@
+name: Application CD - Deploy no EKS
+
+on: 
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Ambiente de deployment (ex.: lab, staging, prod)'
+        required: true
+        default: 'prod'
+      aws_access_key_id:
+        description: 'AWS Access Key ID'
+        required: true
+      aws_secret_access_key:
+        description: 'AWS Secret Access Key'
+        required: true
+      aws_session_token:
+        description: 'AWS Session Token'
+        required: true
+      aws_account_id:
+        description: 'AWS Account ID'
+        required: true
+      aws_backend_bucket:
+        description: 'AWS S3 Bucket para armazenamento do estado do Terraform'
+        required: true
+      aws_region:
+        description: 'AWS Region'
+        required: true
+        default: 'us-east-1'
+
+jobs:
+  terraform:
+    name: Application Deployment
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    # if: github.ref == 'refs/heads/main'
+    # environment: prod      
+  
+    steps:
+      
+    - name: Checkout Código
+      uses: actions/checkout@v3
+
+    - name: Mascarar Credenciais
+      run: |
+        echo "::add-mask::${{ github.event.inputs.aws_access_key_id }}"
+        echo "::add-mask::${{ github.event.inputs.aws_secret_access_key }}"
+        echo "::add-mask::${{ github.event.inputs.aws_session_token }}"
+        echo "::add-mask::${{ github.event.inputs.aws_account_id }}"
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+
+    - name: Configure AWS CLI 
+      uses: aws-actions/configure-aws-credentials@v1
+      with: 
+        aws-access-key-id: ${{ github.event.inputs.aws_access_key_id }}
+        aws-secret-access-key: ${{ github.event.inputs.aws_secret_access_key }}
+        aws-session-token: ${{ github.event.inputs.aws_session_token }}
+        aws-region: ${{ github.event.inputs.aws_region }}
+            
+    - name: Verificar Credenciais AWS
+      run: aws sts get-caller-identity
+
+    - name: Download terraform_infrastructure.json from S3 infrastructure easyorder-infra/terraform.tfstate
+      run: | 
+        aws s3 cp s3://${{ github.event.inputs.aws_backend_bucket }}/easyorder-infra/terraform.tfstate terraform_infrastructure.json 
+        
+    - name: Extract EKS Cluster Name 
+      id: extract-cluster-name
+      run: | 
+        CLUSTER_NAME=$(jq -r '.outputs.easyorder_cluster_name.value' terraform_infrastructure.json)
+        echo "CLUSTER_NAME=$CLUSTER_NAME" >> $GITHUB_OUTPUT
+
+    - name: Download terraform_RDS_database.json from S3 RDS_database easyorder-database/terraform.tfstate
+      run: | 
+        aws s3 cp s3://${{ github.event.inputs.aws_backend_bucket }}/easyorder-database/terraform.tfstate terraform_RDS_database.json 
+
+    - name: Extract RDS Information 
+      id: extract-rds-info 
+      run: | 
+        RDS_INSTANCE_ADDRESS=$(jq -r '.outputs.rds_instance_address.value' terraform_RDS_database.json) 
+        RDS_INSTANCE_PORT=$(jq -r '.outputs.rds_instance_port.value' terraform_RDS_database.json) 
+        echo "RDS_INSTANCE_ADDRESS=$RDS_INSTANCE_ADDRESS" >> $GITHUB_OUTPUT 
+        echo "RDS_INSTANCE_PORT=$RDS_INSTANCE_PORT" >> $GITHUB_OUTPUT
+
+    - name: Update kubeconfig 
+      run: | 
+        aws eks update-kubeconfig --name ${{ steps.extract-cluster-name.outputs.CLUSTER_NAME }} --region ${{ github.event.inputs.aws_region }} 
+    
+    - name: Gerar arquivo easyorder-configmap.yaml
+      working-directory: manifesto_kubernetes/
+      run: |
+          cat <<EOF > easyorder-configmap.yaml
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: easyorder-configmap
+          data:
+            NODE_ENV: development
+            DATABASE_HOST: ${{ steps.extract-rds-info.outputs.RDS_INSTANCE_ADDRESS }}
+            DATABASE_PORT: "${{ steps.extract-rds-info.outputs.RDS_INSTANCE_PORT }}"
+            DATABASE_NAME: ${{ secrets.MYSQL_DATABASE }}
+            DATABASE_USER: ${{ secrets.MYSQL_USER }}
+            DATABASE_PASS: ${{ secrets.MYSQL_PASSWORD }}
+          EOF
+
+    - name: Mostrar arquivo easyorder-configmap.yaml
+      working-directory: manifesto_kubernetes/
+      run: cat easyorder-configmap.yaml
+
+    - name: Deploy no EKS
+      working-directory: manifesto_kubernetes/ 
+      run: |
+        kubectl apply -f svc-easyorder.yaml
+        kubectl apply -f easyorder-configmap.yaml
+        kubectl apply -f easyorder-deployment.yaml
+        kubectl apply -f easyorder-hpa.yaml
+  
+    - name: Obter Hostname do Load Balancer
+      id: get-load-balancer-hostname
+      run: |
+        HOSTNAME=$(kubectl get svc svc-easyorder -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+        echo "LB_HOSTNAME=$HOSTNAME" >> $GITHUB_OUTPUT
+    
+    - name: Obter Porta do Load Balancer
+      id: get-load-balancer-port
+      run: |
+        PORT=$(kubectl get svc svc-easyorder -o jsonpath='{.spec.ports[0].port}')
+        echo "LB_PORT=$PORT" >> $GITHUB_OUTPUT
+    
+    - name: Salvar Informações no S3
+      run: |
+        echo "Load Balancer Hostname: ${{ steps.get-load-balancer-hostname.outputs.LB_HOSTNAME }}" > easyorder_LB.txt
+        echo "Load Balancer Port: ${{ steps.get-load-balancer-hostname.outputs.LB_PORT }}" >> easyorder_LB.txt
+        aws s3 cp easyorder_LB.txt s3://${{ github.event.inputs.aws_backend_bucket }}/easyorder_LB.txt

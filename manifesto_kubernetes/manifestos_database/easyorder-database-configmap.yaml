@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: easyorder-database-configmap
+data:
+  MYSQL_DATABASE: easyorder_database_schema
+  MYSQL_USER: easyorder_database_username
+  MYSQL_PASSWORD: easyorder_database_password
+  MYSQL_ROOT_PASSWORD: easyorder_database_password_10

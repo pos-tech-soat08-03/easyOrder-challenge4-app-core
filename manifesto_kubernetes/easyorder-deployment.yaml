@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: easyorder-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: easyorder
+  template:
+    metadata:
+      name: easyorder
+      labels:
+        app: easyorder
+    spec:
+      containers:
+      - name: easyorder-container
+        image: brunomoreirareis/easyorder:latest
+        resources:
+          limits:
+            memory: "1000Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 30000
+        envFrom:
+        - configMapRef:
+            name: easyorder-configmap
+            optional: true

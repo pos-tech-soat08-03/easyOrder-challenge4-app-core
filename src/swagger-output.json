@@ -1,0 +1,2463 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "easyOrder 3.0",
+    "description": "Sistema de Gestão de Pedidos - Tech Challenge (3) da Pos Tech SOAT ",
+    "version": "1.0.0"
+  },
+  "host": "",
+  "paths": {
+    "/cliente/cadastrar": {
+      "post": {
+        "tags": [
+          "Clientes"
+        ],
+        "summary": "Cadastrar Cliente",
+        "description": "Realiza o Cadastro de um novo Cliente com dados fornecidos no corpo da requisição.<br>  - Retorna o Id de Cliente como chave para continuidade no Pedido.<br>  - Não é permitido o cadastro de mais de um cliente com o mesmo CPF.<br><br>  [ Endpoint para integração ao sistema de autoatendimento ]  ",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "string",
+              "required": [
+                "cpf",
+                "nome",
+                "email"
+              ],
+              "properties": {
+                "cpf": {
+                  "type": "string",
+                  "minLength": 11,
+                  "maxLength": 11,
+                  "example": "12345678909"
+                },
+                "nome": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 255,
+                  "example": "Nome de Teste Sobrenome"
+                },
+                "email": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 255,
+                  "example": "teste.email@email.com"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cliente cadastrado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "resultado_cadastro": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Cliente cadastrado com sucesso"
+                    },
+                    "cliente": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "29a81eeb-d16d-4d6c-a86c-e13597667307"
+                        },
+                        "nome": {
+                          "type": "string",
+                          "example": "João da Silva"
+                        },
+                        "cpf": {
+                          "type": "string",
+                          "example": "123.456.789-01"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "teste@teste.com"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "resultado_cadastro": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Cliente cadastrado com sucesso"
+                    },
+                    "cliente": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "29a81eeb-d16d-4d6c-a86c-e13597667307"
+                        },
+                        "nome": {
+                          "type": "string",
+                          "example": "João da Silva"
+                        },
+                        "cpf": {
+                          "type": "string",
+                          "example": "123.456.789-01"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "teste@teste.com"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ocorreu um erro inesperado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Erro inesperado: Não foi possível cadastrar o cliente"
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Erro inesperado: Não foi possível cadastrar o cliente"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "cpf": {
+                    "example": "any"
+                  },
+                  "nome": {
+                    "example": "any"
+                  },
+                  "email": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cliente/atualizar": {
+      "put": {
+        "tags": [
+          "Clientes"
+        ],
+        "summary": "Atualizar Cliente",
+        "description": "Atualiza o Cadastro de um Cliente existente, através dos dados fornecidos no corpo da requisição.<br>  - Utiliza CPF como chave de identificação, retorna o detalhe do cadastro e Id do Cliente.<br><br>  [ Endpoint para integração aos sistemas administrativo e/ou de loja ]",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "string",
+              "required": [
+                "cpf",
+                "nome",
+                "email"
+              ],
+              "properties": {
+                "cpf": {
+                  "type": "string",
+                  "minLength": 11,
+                  "maxLength": 11,
+                  "example": "12345678909"
+                },
+                "nome": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 255,
+                  "example": "Nome de Testes Sobrenome Atualizado"
+                },
+                "email": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 255,
+                  "example": "teste-email-novo@email.com"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cliente atualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "resultado_atualizacao": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Cliente atualizado com sucesso"
+                    },
+                    "cliente": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "29a81eeb-d16d-4d6c-a86c-e13597667307"
+                        },
+                        "nome": {
+                          "type": "string",
+                          "example": "João da Silva"
+                        },
+                        "cpf": {
+                          "type": "string",
+                          "example": "123.456.789-01"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "teste@teste.com"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "resultado_atualizacao": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Cliente atualizado com sucesso"
+                    },
+                    "cliente": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "29a81eeb-d16d-4d6c-a86c-e13597667307"
+                        },
+                        "nome": {
+                          "type": "string",
+                          "example": "João da Silva"
+                        },
+                        "cpf": {
+                          "type": "string",
+                          "example": "123.456.789-01"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "teste@teste.com"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ocorreu um erro inesperado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Erro inesperado: Não foi possível atualizar o cliente"
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Erro inesperado: Não foi possível atualizar o cliente"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "cpf": {
+                    "example": "any"
+                  },
+                  "nome": {
+                    "example": "any"
+                  },
+                  "email": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cliente/listar": {
+      "get": {
+        "tags": [
+          "Clientes"
+        ],
+        "summary": "Listar Clientes",
+        "description": "Lista todos os clientes cadastrados.<br><br>  [ Endpoint para integração ao sistema administrativo ]",
+        "responses": {
+          "200": {
+            "description": "Clientes listados com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Clientes listados com sucesso"
+                    },
+                    "clientes": {
+                      "type": "array",
+                      "items": {
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "1"
+                          },
+                          "cpf": {
+                            "type": "string",
+                            "example": "000.000.000-00"
+                          },
+                          "nome": {
+                            "type": "string",
+                            "example": "Fulano de Tal"
+                          },
+                          "email": {
+                            "type": "string",
+                            "example": "teste@teste.com"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Clientes listados com sucesso"
+                    },
+                    "clientes": {
+                      "type": "array",
+                      "items": {
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "1"
+                          },
+                          "cpf": {
+                            "type": "string",
+                            "example": "000.000.000-00"
+                          },
+                          "nome": {
+                            "type": "string",
+                            "example": "Fulano de Tal"
+                          },
+                          "email": {
+                            "type": "string",
+                            "example": "teste@teste.com"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ocorreu um erro inesperado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Ocorreu um erro inesperado: Clientes não encontrados."
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Ocorreu um erro inesperado: Clientes não encontrados."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/cliente/buscar/{cpf}": {
+      "get": {
+        "tags": [
+          "Descontinuadas - Mantidas para Testes Locais"
+        ],
+        "summary": "[Deprecated] Buscar Cliente",
+        "description": "Busca Cliente por CPF.<br>  - Retorna detalhe do cadastro, incluindo o Id.<br><br>  ! Atenção: Este endpoint foi descontinuado para uso de autenticação via Lambda, no endpoint /cliente/auth/{cpf}<br><br>  [ Endpoint para integração ao sistema de autoatendimento ]",
+        "parameters": [
+          {
+            "name": "cpf",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "CPF do Cliente sem pontuação",
+            "example": "12345678910"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Solicitação Inválida"
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/cliente/auth/{cpf}": {
+      "get": {
+        "tags": [
+          "Clientes"
+        ],
+        "summary": "[Novo] Autenticar Cliente",
+        "description": "Autenticar Cliente via CPF.<br>  - Retorna o Id do cliente, caso encontrado, como chave para continuidade no Pedido.<br><br>  [ Endpoint para integração ao sistema de autoatendimento ]",
+        "parameters": [
+          {
+            "name": "cpf",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "CPF do Cliente sem pontuação",
+            "example": "12345678910"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/pagamento/webhook/": {
+      "post": {
+        "tags": [
+          "Pagamentos"
+        ],
+        "summary": "Webhook para Confirmação de Pagamento (Transação)",
+        "description": "Captura o retorno de status de transação a partir de webhook disparado pelo Serviço de Pagamento.<br>  - Pode ser utilizado para simulação, nesse caso informe o id e status de aprovação no corpo da requisição<br><br>  [ Endpoint para integração ao gateway de pagamentos - Externo]",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "string",
+              "required": [
+                "id",
+                "status"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 36,
+                  "maxLength": 36,
+                  "format": "uuid",
+                  "example": "29a81eeb-d16d-4d6c-a86c-e13597667307"
+                },
+                "status": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 255,
+                  "example": "approved"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Solicitação Inválida"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "example": "any"
+                  },
+                  "status": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pagamento/listar-transacoes/{pedidoId}": {
+      "get": {
+        "tags": [
+          "Pagamentos"
+        ],
+        "summary": "Listar Transações",
+        "description": "Obtém a lista de Transações associadas a um id de Pedido.<br>  - Utilizada para fins de simulação e consulta de transações pela adninistração.<br><br>  [ Endpoint para integração aos sistemas administrativo e/ou de loja ]",
+        "parameters": [
+          {
+            "name": "pedidoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Solicitação Inválida"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/pedido": {
+      "post": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "Cadastrar Pedido",
+        "description": "Início (rascunho) de novo Pedido. Retorna um Id de Pedido.<br>  - Pode considerar cliente identificado com ID (cliente já cadastrado) ou<br>  - Cliente não identificado (pedido sem associação a cliente)<br><br>  [ Endpoint para integração ao sistema de autoatendimento ]",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "string",
+              "properties": {
+                "cliente_identificado": {
+                  "type": "boolean",
+                  "example": "true"
+                },
+                "clienteId": {
+                  "type": "string",
+                  "minLength": 36,
+                  "maxLength": 36,
+                  "format": "uuid",
+                  "example": "29a81eeb-d16d-4d6c-a86c-e13597667307"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pedido cadastrado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Pedido cadastrado com sucesso"
+                    },
+                    "pedido": {
+                      "$ref": "#/components/schemas/Pedido"
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Pedido cadastrado com sucesso"
+                    },
+                    "pedido": {
+                      "$ref": "#/components/schemas/Pedido"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ocorreu um erro inesperado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Ocorreu um erro inesperado."
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Ocorreu um erro inesperado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não Encontrado"
+          },
+          "500": {
+            "description": "Erro Interno do Servidor"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "cliente_identificado": {
+                    "example": "any"
+                  },
+                  "clienteId": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pedido/listar/{statusPedido}": {
+      "get": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "Listar Pedidos por status",
+        "description": "Lista pedidos por status<br><br>  [ Endpoint para integração aos sistemas administrativo e/ou de loja ]",
+        "parameters": [
+          {
+            "name": "statusPedido",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Status do pedido",
+            "example": "RASCUNHO",
+            "enum": [
+              "EM_ABERTO",
+              "AGUARDANDO_PAGAMENTO",
+              "RECEBIDO",
+              "EM_PREPARACAO",
+              "PRONTO",
+              "FINALIZADO",
+              "CANCELADO"
+            ]
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Página",
+            "required": false,
+            "example": 1,
+            "default": 1,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Limite de registros por página",
+            "required": false,
+            "example": 10,
+            "default": 10,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "orderField",
+            "in": "query",
+            "description": "Campo de ordenação",
+            "required": false,
+            "example": "DATA_CADASTRO",
+            "default": "DATA_CADASTRO",
+            "enum": [
+              "DATA_CADASTRO"
+            ],
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orderDirection",
+            "in": "query",
+            "description": "Direção da ordenação",
+            "required": false,
+            "example": "DESC",
+            "default": "DESC",
+            "enum": [
+              "ASC",
+              "DESC"
+            ],
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pedidos listados com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Pedidos listados com sucesso"
+                    },
+                    "pedidos": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Pedido"
+                      }
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Pedidos listados com sucesso"
+                    },
+                    "pedidos": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Pedido"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitação Inválida"
+          },
+          "404": {
+            "description": "Nenhum pedido encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Nenhum pedido encontrado"
+                    },
+                    "pedidos": {
+                      "type": "array",
+                      "items": {}
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Nenhum pedido encontrado"
+                    },
+                    "pedidos": {
+                      "type": "array",
+                      "items": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro Interno do Servidor"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/pedido/{pedidoId}": {
+      "get": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "Buscar Pedido",
+        "description": "Busca um Pedido por ID<br><br>  [ Endpoint para integração aos sistemas administrativo e/ou de loja ]",
+        "parameters": [
+          {
+            "name": "pedidoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID do pedido",
+            "example": "29a81eeb-d16d-4d6c-a86c-e13597667307"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pedido Encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Nenhum pedido encontrado"
+                    },
+                    "pedido": {
+                      "$ref": "#/components/schemas/Pedido"
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Nenhum pedido encontrado"
+                    },
+                    "pedido": {
+                      "$ref": "#/components/schemas/Pedido"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ocorreu um erro inesperado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Ocorreu um erro inesperado: Pedido não encontrado"
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Ocorreu um erro inesperado: Pedido não encontrado"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Nenhum pedido encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Nenhum pedido encontrado"
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Nenhum pedido encontrado"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro Interno do Servidor"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/pedido/{pedidoId}/cancelar": {
+      "put": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "Cancelar Pedido",
+        "description": "Cancelamento de um Pedido com base no id.<br><br>  [ Endpoint para integração aos sistemas administrativo e/ou de loja ]",
+        "parameters": [
+          {
+            "name": "pedidoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Solicitação Inválida"
+          },
+          "404": {
+            "description": "Não Encontrado"
+          },
+          "500": {
+            "description": "Erro Interno do Servidor"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/pedido/{pedidoId}/confirmacao-pagamento": {
+      "put": {
+        "tags": [
+          "Descontinuadas - Mantidas para Testes Locais"
+        ],
+        "summary": "[Deprecated] Confirmar Pagamento Pedido",
+        "description": "Baixa manual de um pedido pendente de pagamento.<br>  - Endpoint exclusivo para testes locais<br><br>  ! Atenção: Este endpoint foi descontinuado, sendo substituído por /pagamento/webhook<br><br>  [ Endpoint para integração ao gateway de pagamentos - Externo]",
+        "parameters": [
+          {
+            "name": "pedidoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID do pedido",
+            "example": "29a81eeb-d16d-4d6c-a86c-e13597667307"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pedido pago com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Pedido pago com sucesso"
+                    },
+                    "pedido": {
+                      "$ref": "#/components/schemas/Pedido"
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Pedido pago com sucesso"
+                    },
+                    "pedido": {
+                      "$ref": "#/components/schemas/Pedido"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ocorreu um erro inesperado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Ocorreu um erro inesperado: Pedido não encontrado"
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Ocorreu um erro inesperado: Pedido não encontrado"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não Encontrado"
+          },
+          "500": {
+            "description": "Erro Interno do Servidor"
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/pedido/{pedidoId}/checkout": {
+      "put": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "Checkout Pedido",
+        "description": "Checkout de um pedido e envio para o serviço de Pagamento<br><br>  [ Endpoint para integração ao sistema de autoatendimento / PDV ]",
+        "parameters": [
+          {
+            "name": "pedidoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID do pedido",
+            "example": "29a81eeb-d16d-4d6c-a86c-e13597667307"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pedido fechado com sucesso. Aguardando pagamento.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Pedido fechado com sucesso. Aguardando pagamento."
+                    },
+                    "pedido": {
+                      "$ref": "#/components/schemas/Pedido"
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Pedido fechado com sucesso. Aguardando pagamento."
+                    },
+                    "pedido": {
+                      "$ref": "#/components/schemas/Pedido"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ocorreu um erro inesperado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Ocorreu um erro inesperado: Pedido não encontrado"
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Ocorreu um erro inesperado: Pedido não encontrado"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não Encontrado"
+          },
+          "500": {
+            "description": "Erro Interno do Servidor"
+          }
+        }
+      }
+    },
+    "/pedido/{pedidoId}/combo": {
+      "post": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "Adicionar Combo ao Pedido",
+        "description": "Adiciona um Combo ao Pedido. Precisa de um Produto válido associado ao Combo.<br><br>  [ Endpoint para integração ao sistema de autoatendimento ]",
+        "parameters": [
+          {
+            "name": "pedidoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID do pedido",
+            "example": "228ec10e-5675-47f4-ba1f-2c4932fe68cc"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "string",
+              "required": [
+                "lancheId",
+                "bebidaId",
+                "sobremesaId",
+                "acompanhamentoId"
+              ],
+              "properties": {
+                "lancheId": {
+                  "type": "string",
+                  "minLength": 36,
+                  "maxLength": 36,
+                  "format": "uuid",
+                  "example": "29a81eeb-d16d-4d6c-a86c-e13597667307"
+                },
+                "bebidaId": {
+                  "type": "string",
+                  "minLength": 36,
+                  "maxLength": 36,
+                  "format": "uuid",
+                  "example": "29a81eeb-d16d-4d6c-a86c-e13597667307"
+                },
+                "sobremesaId": {
+                  "type": "string",
+                  "minLength": 36,
+                  "maxLength": 36,
+                  "format": "uuid",
+                  "example": "29a81eeb-d16d-4d6c-a86c-e13597667307"
+                },
+                "acompanhamentoId": {
+                  "type": "string",
+                  "minLength": 36,
+                  "maxLength": 36,
+                  "format": "uuid",
+                  "example": "29a81eeb-d16d-4d6c-a86c-e13597667307"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Combo adicionado ao pedido com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Combo adicionado ao pedido com sucesso"
+                    },
+                    "pedido": {
+                      "$ref": "#/components/schemas/Pedido"
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Combo adicionado ao pedido com sucesso"
+                    },
+                    "pedido": {
+                      "$ref": "#/components/schemas/Pedido"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ocorreu um erro inesperado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Ocorreu um erro inesperado: Pedido não encontrado"
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Ocorreu um erro inesperado: Pedido não encontrado"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não Encontrado"
+          },
+          "500": {
+            "description": "Erro Interno do Servidor"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "lancheId": {
+                    "example": "any"
+                  },
+                  "bebidaId": {
+                    "example": "any"
+                  },
+                  "sobremesaId": {
+                    "example": "any"
+                  },
+                  "acompanhamentoId": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pedido/{pedidoId}/combo/{comboId}": {
+      "delete": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "Remover Combo do Pedido",
+        "description": "Remove um Combo do Pedido<br><br>  [ Endpoint para integração ao sistema de autoatendimento ]",
+        "parameters": [
+          {
+            "name": "pedidoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID do pedido",
+            "example": "228ec10e-5675-47f4-ba1f-2c4932fe68cc"
+          },
+          {
+            "name": "comboId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID do combo",
+            "example": "228ec10e-5675-47f4-ba1f-2c4932fe68cc"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Combo removido do pedido com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Combo removido do pedido com sucesso"
+                    },
+                    "pedido": {
+                      "$ref": "#/components/schemas/Pedido"
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Combo removido do pedido com sucesso"
+                    },
+                    "pedido": {
+                      "$ref": "#/components/schemas/Pedido"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ocorreu um erro inesperado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Ocorreu um erro inesperado: Pedido não encontrado"
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Ocorreu um erro inesperado: Pedido não encontrado"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não Encontrado"
+          },
+          "500": {
+            "description": "Erro Interno do Servidor"
+          }
+        }
+      }
+    },
+    "/preparacao/pedido/proximo": {
+      "get": {
+        "tags": [
+          "Preparação"
+        ],
+        "summary": "Buscar o próximo Pedido",
+        "description": "Busca o próximo pedido para preparação<br><br>  [ Endpoint para integração aos sistemas administrativo e/ou de loja ]",
+        "responses": {
+          "200": {
+            "description": "Pedido encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Pedido encontrado"
+                    },
+                    "pedido": {
+                      "$ref": "#/components/schemas/Pedido"
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Pedido encontrado"
+                    },
+                    "pedido": {
+                      "$ref": "#/components/schemas/Pedido"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ocorreu um erro inesperado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Ocorreu um erro inesperado: Pedido não encontrado"
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Ocorreu um erro inesperado: Pedido não encontrado"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Nenhum pedido encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Nenhum pedido encontrado"
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Nenhum pedido encontrado"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro Interno do Servidor"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/preparacao/pedido/{pedidoId}/iniciar-preparacao": {
+      "put": {
+        "tags": [
+          "Preparação"
+        ],
+        "summary": "Iniciar Preparação de Pedido",
+        "description": "Inicia a preparação de um pedido<br><br>  [ Endpoint para integração aos sistemas administrativo e/ou de loja ]",
+        "parameters": [
+          {
+            "name": "pedidoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID do pedido",
+            "example": "29a81eeb-d16d-4d6c-a86c-e13597667307"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Preparação do pedido iniciada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Preparação do pedido iniciada com sucesso"
+                    },
+                    "pedido": {
+                      "$ref": "#/components/schemas/Pedido"
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Preparação do pedido iniciada com sucesso"
+                    },
+                    "pedido": {
+                      "$ref": "#/components/schemas/Pedido"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ocorreu um erro inesperado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Ocorreu um erro inesperado: Pedido não encontrado"
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Ocorreu um erro inesperado: Pedido não encontrado"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não Encontrado"
+          },
+          "500": {
+            "description": "Erro Interno do Servidor"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/preparacao/pedido/{pedidoId}/finalizar-preparacao": {
+      "put": {
+        "tags": [
+          "Preparação"
+        ],
+        "summary": "Finalizar Preparação de Pedido",
+        "description": "Finaliza a preparação de um pedido<br><br>  [ Endpoint para integração aos sistemas administrativo e/ou de loja ]",
+        "parameters": [
+          {
+            "name": "pedidoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID do pedido",
+            "example": "29a81eeb-d16d-4d6c-a86c-e13597667307"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Preparação do pedido finalizada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Preparação do pedido finalizada com sucesso"
+                    },
+                    "pedido": {
+                      "$ref": "#/components/schemas/Pedido"
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Preparação do pedido finalizada com sucesso"
+                    },
+                    "pedido": {
+                      "$ref": "#/components/schemas/Pedido"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ocorreu um erro inesperado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Ocorreu um erro inesperado: Pedido não encontrado"
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Ocorreu um erro inesperado: Pedido não encontrado"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não Encontrado"
+          },
+          "500": {
+            "description": "Erro Interno do Servidor"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/preparacao/pedido/{pedidoId}/entregar": {
+      "put": {
+        "tags": [
+          "Preparação"
+        ],
+        "summary": "Entregar Pedido",
+        "description": "Entrega um pedido preparado<br><br>  [ Endpoint para integração aos sistemas administrativo e/ou de loja ]",
+        "parameters": [
+          {
+            "name": "pedidoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID do pedido",
+            "example": "29a81eeb-d16d-4d6c-a86c-e13597667307"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pedido entregue com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Pedido entregue com sucesso."
+                    },
+                    "pedido": {
+                      "$ref": "#/components/schemas/Pedido"
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Pedido entregue com sucesso."
+                    },
+                    "pedido": {
+                      "$ref": "#/components/schemas/Pedido"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ocorreu um erro inesperado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Ocorreu um erro inesperado: Pedido não encontrado"
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Ocorreu um erro inesperado: Pedido não encontrado"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não Encontrado"
+          },
+          "500": {
+            "description": "Erro Interno do Servidor"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/produto/listar": {
+      "get": {
+        "tags": [
+          "Produtos"
+        ],
+        "summary": "Listar Produtos",
+        "description": "Lista todos os produtos cadastrados<br><br>  [ Endpoint para integração aos sistemas administrativo e/ou de loja ]",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/produto/buscar/{id}": {
+      "get": {
+        "tags": [
+          "Produtos"
+        ],
+        "summary": "Buscar Produto",
+        "description": "Busca um produto utilizando o Id.<br><br>  [ Endpoint para integração aos sistemas administrativo e/ou de loja ]",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID do produto",
+            "example": "5e73a938-41e7-4b76-a5a0-ae6147266e72"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Produto localizado:",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "resultado_busca": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Produto localizado:"
+                    },
+                    "produto": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "5e73a938-41e7-4b76-a5a0-ae6147266e72"
+                        },
+                        "nome": {
+                          "type": "string",
+                          "example": "X-Bacon"
+                        },
+                        "preco": {
+                          "type": "number",
+                          "example": "20"
+                        },
+                        "categoria": {
+                          "type": "string",
+                          "example": "Lanche"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "resultado_busca": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Produto localizado:"
+                    },
+                    "produto": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "5e73a938-41e7-4b76-a5a0-ae6147266e72"
+                        },
+                        "nome": {
+                          "type": "string",
+                          "example": "X-Bacon"
+                        },
+                        "preco": {
+                          "type": "number",
+                          "example": "20"
+                        },
+                        "categoria": {
+                          "type": "string",
+                          "example": "Lanche"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitação Inválida"
+          },
+          "404": {
+            "description": "Produto não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "resultado_busca": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Produto não encontrado"
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "resultado_busca": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Produto não encontrado"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/produto/listar/{categoria}": {
+      "get": {
+        "tags": [
+          "Produtos"
+        ],
+        "summary": "Listar Produtos por Categoria",
+        "description": "Lista produtos por categoria<br><br>  [ Endpoint para integração aos sistemas administrativo e/ou de loja ]",
+        "parameters": [
+          {
+            "name": "categoria",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID da Categoria",
+            "example": "LANCHE"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Solicitação Inválida"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/produto/remover/{id}": {
+      "delete": {
+        "tags": [
+          "Produtos"
+        ],
+        "summary": "Remover Produto",
+        "description": "Remove um produto, por Id.<br><br>  [ Endpoint para integração aos sistemas administrativo e/ou de loja ]",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID do produto",
+            "example": "228ec10e-5675-47f4-ba1f-2c4932fe68cc"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Solicitação Inválida"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/produto/cadastrar": {
+      "post": {
+        "tags": [
+          "Produtos"
+        ],
+        "summary": "Cadastrar Produto",
+        "description": "Realiza o Cadastro de um Novo Produto, através dos dados fornecidos no corpo da requisição.<br><br>  [ Endpoint para integração aos sistemas administrativo e/ou de loja ]",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "string",
+              "properties": {
+                "nome": {
+                  "type": "string",
+                  "example": "X-Salada"
+                },
+                "descricao": {
+                  "type": "string",
+                  "example": "sem salada, sem tomate"
+                },
+                "preco": {
+                  "type": "number",
+                  "example": "25"
+                },
+                "imagemURL": {
+                  "type": "string",
+                  "example": "xsalada.png"
+                },
+                "categoria": {
+                  "type": "string",
+                  "example": "LANCHE"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Produto cadastrado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "resultado_cadastro": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Produto cadastrado com sucesso"
+                    },
+                    "produto": {
+                      "type": "object",
+                      "properties": {
+                        "nome": {
+                          "type": "string",
+                          "example": "X-Salada"
+                        },
+                        "descricao": {
+                          "type": "string",
+                          "example": "sem salada, sem tomate"
+                        },
+                        "preco": {
+                          "type": "number",
+                          "example": "25"
+                        },
+                        "imagemURL": {
+                          "type": "string",
+                          "example": "xsalada.png"
+                        },
+                        "categoria": {
+                          "type": "string",
+                          "example": "LANCHE"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "resultado_cadastro": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Produto cadastrado com sucesso"
+                    },
+                    "produto": {
+                      "type": "object",
+                      "properties": {
+                        "nome": {
+                          "type": "string",
+                          "example": "X-Salada"
+                        },
+                        "descricao": {
+                          "type": "string",
+                          "example": "sem salada, sem tomate"
+                        },
+                        "preco": {
+                          "type": "number",
+                          "example": "25"
+                        },
+                        "imagemURL": {
+                          "type": "string",
+                          "example": "xsalada.png"
+                        },
+                        "categoria": {
+                          "type": "string",
+                          "example": "LANCHE"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ocorreu um erro inesperado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Erro inesperado: Não foi possivel cadastrar o produto"
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Erro inesperado: Não foi possivel cadastrar o produto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": {
+                    "example": "any"
+                  },
+                  "descricao": {
+                    "example": "any"
+                  },
+                  "preco": {
+                    "example": "any"
+                  },
+                  "categoria": {
+                    "example": "any"
+                  },
+                  "imagemURL": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/produto/atualizar": {
+      "put": {
+        "tags": [
+          "Produtos"
+        ],
+        "summary": "Atualizar Produto",
+        "description": "Atualiza o Cadastro de um Produto, através dos dados fornecidos no corpo da requisição.<br><br>  [ Endpoint para integração aos sistemas administrativo e/ou de loja ]",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "string",
+              "properties": {
+                "nome": {
+                  "type": "string",
+                  "example": "X-EGG"
+                },
+                "descricao": {
+                  "type": "string",
+                  "example": "Sem cebola, sem tomate"
+                },
+                "preco": {
+                  "type": "number",
+                  "example": "35"
+                },
+                "categoria": {
+                  "type": "string",
+                  "example": "Lanche"
+                },
+                "imagemURL": {
+                  "type": "string",
+                  "example": "x-egg.jpeg"
+                },
+                "id": {
+                  "type": "string",
+                  "example": "0eb3a93d-df52-4f04-a463-389105328855"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Produto não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "resultado_cadastro": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Produto não encontrado, id inexistente"
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "properties": {
+                    "resultado_cadastro": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "mensagem": {
+                      "type": "string",
+                      "example": "Produto não encontrado, id inexistente"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": {
+                    "example": "any"
+                  },
+                  "descricao": {
+                    "example": "any"
+                  },
+                  "preco": {
+                    "example": "any"
+                  },
+                  "categoria": {
+                    "example": "any"
+                  },
+                  "imagemURL": {
+                    "example": "any"
+                  },
+                  "id": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "Outros"
+        ],
+        "summary": "Health check",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "ID": {
+        "type": "string",
+        "minLength": 36,
+        "maxLength": 36,
+        "format": "uuid",
+        "example": "29a81eeb-d16d-4d6c-a86c-e13597667307"
+      },
+      "Produto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/definitions/ID"
+          },
+          "nome": {
+            "type": "string",
+            "example": "Nome do produto"
+          },
+          "descricao": {
+            "type": "string",
+            "example": "Descrição do produto"
+          },
+          "preco": {
+            "type": "number",
+            "example": 20
+          },
+          "categoria": {
+            "type": "string",
+            "example": "CATEGORIA_PRODUTO"
+          },
+          "imagemURL": {
+            "type": "string",
+            "example": "https://fakeimg.com/image.png"
+          }
+        }
+      },
+      "Combo": {
+        "type": "object",
+        "properties": {
+          "lanche": {
+            "$ref": "#/definitions/Produto"
+          },
+          "bebida": {
+            "$ref": "#/definitions/Produto"
+          },
+          "sobremesa": {
+            "$ref": "#/definitions/Produto"
+          },
+          "acompanhamento": {
+            "$ref": "#/definitions/Produto"
+          },
+          "valorTotal": {
+            "type": "number",
+            "example": 80
+          }
+        }
+      },
+      "Pedido": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "schema": {
+              "$ref": "#/definitions/ID"
+            }
+          },
+          "data": {
+            "type": "string",
+            "example": "2021-10-10T15:00:00.000Z"
+          },
+          "cliente_identificado": {
+            "type": "boolean",
+            "example": true
+          },
+          "clienteId": {
+            "$ref": "#/definitions/ID"
+          },
+          "status": {
+            "type": "string",
+            "example": "EM_ABERTO"
+          },
+          "pagamentoStatus": {
+            "type": "string",
+            "example": "PENDENTE"
+          },
+          "combos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Combo"
+            }
+          },
+          "valorTotal": {
+            "type": "number",
+            "example": 80
+          }
+        }
+      }
+    }
+  }
+}

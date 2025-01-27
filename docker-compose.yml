@@ -1,0 +1,42 @@
+
+services:
+  backend:
+    build: .
+    image: easyorder:4.0.0
+    container_name: easyorder
+    environment:
+      NODE_ENV: "development"
+      SERVER_PORT: "3000"
+      DATABASE_HOST: "easyorder_database"
+      DATABASE_PORT: "3306"
+      DATABASE_NAME: "easyorder_database_schema"
+      DATABASE_USER: "easyorder_database_username"
+      DATABASE_PASS: "easyorder_database_password"
+    ports:
+      - "3000:3000"
+    links:
+      - easyorder_database
+    depends_on:
+        easyorder_database:
+            condition: service_healthy
+  easyorder_database:
+    image: mysql:9.0.1
+    container_name: easyorder_database
+    restart: always
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - easyorder-database:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: 'easyorder_database_schema'
+      MYSQL_USER: 'easyorder_database_username'
+      MYSQL_PASSWORD: 'easyorder_database_password'
+      MYSQL_ROOT_PASSWORD: 'easyorder_database_password_10'
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-uroot", "-peasyorder_database_password_10"] 
+      timeout: 5s
+      retries: 3
+volumes:
+  easyorder-database:
