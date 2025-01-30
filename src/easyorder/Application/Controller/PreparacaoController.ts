@@ -38,7 +38,7 @@ export class PreparacaoController {
     try {
       if (typeof pedidoId !== "string") {
         return PedidoAdapter.validateError("Id do pedido inválido");
-    }
+      }
       const pedidoGateway = dbConnection.gateways.pedidoGateway;
       const { pedido, mensagem } =
         await PreparacaoUseCases.entregaPedidoUseCase(pedidoGateway, pedidoId);
@@ -66,10 +66,13 @@ export class PreparacaoController {
     try {
       if (typeof pedidoId !== "string") {
         return PedidoAdapter.validateError("Id do pedido inválido");
-    }
+      }
       const pedidoGateway = dbConnection.gateways.pedidoGateway;
       const { pedido, mensagem } =
-        await PreparacaoUseCases.iniciarPreparacaoPedidoUseCase(pedidoGateway, pedidoId);
+        await PreparacaoUseCases.iniciarPreparacaoPedidoUseCase(
+          pedidoGateway,
+          pedidoId
+        );
       if (pedido === undefined) {
         return PedidoAdapter.dataNotFound(mensagem);
       }
@@ -86,7 +89,7 @@ export class PreparacaoController {
       return PedidoAdapter.systemError("Erro ao iniciar preparação do pedido.");
     }
   }
-  
+
   public static async finalizaPreparacao(
     dbConnection: IDbConnection,
     pedidoId: string
@@ -94,10 +97,13 @@ export class PreparacaoController {
     try {
       if (typeof pedidoId !== "string") {
         return PedidoAdapter.validateError("Id do pedido inválido");
-    }
+      }
       const pedidoGateway = dbConnection.gateways.pedidoGateway;
       const { pedido, mensagem } =
-        await PreparacaoUseCases.finalizaPreparacaoUseCase(pedidoGateway, pedidoId);
+        await PreparacaoUseCases.finalizaPreparacaoUseCase(
+          pedidoGateway,
+          pedidoId
+        );
       if (pedido === undefined) {
         return PedidoAdapter.dataNotFound(mensagem);
       }
@@ -111,6 +117,9 @@ export class PreparacaoController {
         return PedidoAdapter.validateError(error.message);
       }
 
-      return PedidoAdapter.systemError("Erro ao finalizar preparação do pedido.");
+      return PedidoAdapter.systemError(
+        "Erro ao finalizar preparação do pedido."
+      );
     }
-  }}
+  }
+}

@@ -2,14 +2,14 @@ import express from "express";
 import { MySQLConnection } from "./easyorder/Infrastructure/DB/Impl/MySQLConnection";
 import { CategoriaGatewayMock } from "./easyorder/Infrastructure/DB/Mock/CategoriaGatewayMock";
 import { DefaultApiEndpoints } from "./easyorder/Infrastructure/Api/ApisDefaultEndpoints";
-import { ApiClientes } from "./easyorder/Infrastructure/Api/ApiClientes";
 import { ApiPedidos } from "./easyorder/Infrastructure/Api/ApiPedidos";
 import { ApiPreparacao } from "./easyorder/Infrastructure/Api/ApiPreparacao";
-import { ApiProdutos } from "./easyorder/Infrastructure/Api/ApiProdutos";
 // import { PagamentoServiceMock } from "./easyorder/Infrastructure/Service/PagamentoServiceMock";
 import { ApiPagamentos } from "./easyorder/Infrastructure/Api/ApiPagamentos";
 import { PagamentoServiceML } from "./easyorder/Infrastructure/Service/PagamentoServiceML";
 import { PagamentoServiceMock } from "./easyorder/Infrastructure/Service/PagamentoServiceMock";
+import { ProdutoService } from "./easyorder/Infrastructure/Service/ProdutoService";
+import { MSConnectionInfo } from "./easyorder/Core/Types/ConnectionInfo";
 // import { ProdutoGatewayMock } from './easyorder/Infrastructure/Output/Gateway/Mock/ProdutoGatewayMock';
 // import { ClienteGatewayMock } from './easyorder/Infrastructure/Output/Gateway/Mock/ClienteGatewayMock';
 // import { PedidoGatewayMock } from './easyorder/Infrastructure/Output/Gateway/Mock/PedidoGatewayMock';
@@ -22,11 +22,15 @@ const mysqlConnection = new MySQLConnection({
   database: process.env.DATABASE_NAME || "ERROR",
   username: process.env.DATABASE_USER || "ERROR",
   password: process.env.DATABASE_PASS || "ERROR",
-  databaseType: 'mysql'
+  databaseType: "mysql",
 });
+const msProductConnection: MSConnectionInfo = {
+  url: process.env.PRODUCT_URL || "ERROR",
+};
 
 // Inicialização serviços
 const servicoPagamento = new PagamentoServiceMock();
+const servicoProduto = new ProdutoService(msProductConnection);
 // const servicoPagamento = new PagamentoServiceML();
 
 // Inicialização de framework Express + endpoints default
@@ -35,9 +39,7 @@ const app = express();
 DefaultApiEndpoints.start(app);
 
 // Inicialização de endpoints da aplicação
-ApiClientes.start(mysqlConnection, app);
-ApiPedidos.start(mysqlConnection, servicoPagamento, app);
-ApiProdutos.start(mysqlConnection, app);
+ApiPedidos.start(mysqlConnection, servicoProduto, servicoPagamento, app);
 ApiPreparacao.start(mysqlConnection, app);
 ApiPagamentos.start(mysqlConnection, servicoPagamento, app);
 

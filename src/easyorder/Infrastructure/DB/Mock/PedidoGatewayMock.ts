@@ -1,7 +1,12 @@
 import fs from "fs";
 import { PedidoEntity } from "../../../Core/Entity/PedidoEntity";
 import { StatusPedidoValueObject } from "../../../Core/Entity/ValueObject/StatusPedidoValueObject";
-import { PedidoGatewayInterface, PedidoGatewayInterfaceFilter, PedidoGatewayInterfaceFilterOrderField, PedidoGatewayInterfaceFilterOrderDirection } from "../../../Core/Interfaces/Gateway/PedidoGatewayInterface";
+import {
+  PedidoGatewayInterface,
+  PedidoGatewayInterfaceFilter,
+  PedidoGatewayInterfaceFilterOrderField,
+  PedidoGatewayInterfaceFilterOrderDirection,
+} from "../../../Core/Interfaces/Gateway/PedidoGatewayInterface";
 
 export class PedidoGatewayMock implements PedidoGatewayInterface {
   private filePath: string;
