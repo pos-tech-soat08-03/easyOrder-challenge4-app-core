@@ -1,4 +1,3 @@
-
 export class DataNotFoundException extends Error {
   constructor(message: string = "Data not found") {
     super(message);

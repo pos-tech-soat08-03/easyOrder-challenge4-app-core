@@ -8,8 +8,12 @@ import {
   StatusPedidoValueObject,
   StatusPedidoEnum,
 } from "../../Core/Entity/ValueObject/StatusPedidoValueObject";
-import { ConnectionInfo } from "../../Core/Types/ConnectionInfo";
-import { PedidoGatewayInterface, PedidoGatewayInterfaceFilter, PedidoGatewayInterfaceFilterOrderField } from "../../Core/Interfaces/Gateway/PedidoGatewayInterface";
+import { DBConnectionInfo } from "../../Core/Types/ConnectionInfo";
+import {
+  PedidoGatewayInterface,
+  PedidoGatewayInterfaceFilter,
+  PedidoGatewayInterfaceFilterOrderField,
+} from "../../Core/Interfaces/Gateway/PedidoGatewayInterface";
 
 class LocalModel extends Model {
   public id!: string;
@@ -23,7 +27,7 @@ class LocalModel extends Model {
 export class PedidoGateway implements PedidoGatewayInterface {
   private sequelize: Sequelize;
 
-  constructor(private dbconnection: ConnectionInfo) {
+  constructor(private dbconnection: DBConnectionInfo) {
     this.sequelize = new Sequelize(
       this.dbconnection.database,
       this.dbconnection.username,
@@ -181,4 +185,3 @@ export class PedidoGateway implements PedidoGatewayInterface {
     );
   }
 }
-

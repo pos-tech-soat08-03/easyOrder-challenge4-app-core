@@ -4,16 +4,21 @@ import { IDbConnection } from "../../Core/Interfaces/IDbConnection";
 import { PedidoController } from "../../Application/Controller/PedidoController";
 import { PedidoAdapter } from "../../Application/Presenter/PedidoAdapter";
 import { PagamentoServiceInterface } from "../../Core/Interfaces/Services/PagamentoServiceInterface";
-import { ApiResponsePedidos } from './utils/ApiResponsePedidos';
+import { ApiResponsePedidos } from "./utils/ApiResponsePedidos";
+import { MSConnectionInfo } from "../../Core/Types/ConnectionInfo";
+import { ProdutoService } from "../Service/ProdutoService";
 
 export class ApiPedidos {
+  static start(
+    dbconnection: IDbConnection,
+    productService: ProdutoService,
+    servicoPagamento: PagamentoServiceInterface,
+    app: Express
+  ): void {
+    app.use(express.json());
 
-    static start(dbconnection: IDbConnection, servicoPagamento: PagamentoServiceInterface, app: Express): void {
-
-        app.use(express.json());
-
-        app.post("/pedido", async (req, res) => {
-            /**
+    app.post("/pedido", async (req, res) => {
+      /**
                 #swagger.tags = ['Pedidos']
                 #swagger.path = '/pedido'
                 #swagger.method = 'post'
@@ -67,20 +72,30 @@ export class ApiPedidos {
                     }
                 }
             */
-            if (req.body === undefined || Object.keys(req.body).length === 0) {
-                res.status(400).type('json').send(PedidoAdapter.systemError("Erro: Sem dados no Body da requisição.").dataJsonString);
-                return
-            }
-            const clienteIdentificado: boolean = req.body.cliente_identificado == "true";
-            const clienteId: string = req.body.clienteId;
-            const pedidoPresenter = await PedidoController.CadastrarPedido(dbconnection, clienteIdentificado, clienteId);
+      if (req.body === undefined || Object.keys(req.body).length === 0) {
+        res
+          .status(400)
+          .type("json")
+          .send(
+            PedidoAdapter.systemError("Erro: Sem dados no Body da requisição.")
+              .dataJsonString
+          );
+        return;
+      }
+      const clienteIdentificado: boolean =
+        req.body.cliente_identificado == "true";
+      const clienteId: string = req.body.clienteId;
+      const pedidoPresenter = await PedidoController.CadastrarPedido(
+        dbconnection,
+        clienteIdentificado,
+        clienteId
+      );
 
-            ApiResponsePedidos.responseJson(pedidoPresenter, res);
+      ApiResponsePedidos.responseJson(pedidoPresenter, res);
+    });
 
-        });
-
-        app.get("/pedido/listar/:statusPedido", async (req, res) => {
-            /**
+    app.get("/pedido/listar/:statusPedido", async (req, res) => {
+      /**
                 #swagger.tags = ['Pedidos']
                 #swagger.path = '/pedido/listar/{statusPedido}'
                 #swagger.method = 'get'
@@ -180,29 +195,42 @@ export class ApiPedidos {
                 }
             */
 
-            if (req.params.statusPedido === undefined || req.params.statusPedido === "" || req.params.statusPedido === null) {
-                ApiResponsePedidos.responseJson(PedidoAdapter.validateError("Erro: Status do pedido não informado."), res);
-            }
+      if (
+        req.params.statusPedido === undefined ||
+        req.params.statusPedido === "" ||
+        req.params.statusPedido === null
+      ) {
+        ApiResponsePedidos.responseJson(
+          PedidoAdapter.validateError("Erro: Status do pedido não informado."),
+          res
+        );
+      }
 
-            const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
-            const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
-            const orderField = req.query.orderField ? req.query.orderField as string : 'DATA_CADASTRO';
-            const orderDirection = req.query.orderDirection ? req.query.orderDirection as string : 'DESC';
+      const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+      const limit = req.query.limit
+        ? parseInt(req.query.limit as string, 10)
+        : 10;
+      const orderField = req.query.orderField
+        ? (req.query.orderField as string)
+        : "DATA_CADASTRO";
+      const orderDirection = req.query.orderDirection
+        ? (req.query.orderDirection as string)
+        : "DESC";
 
-            const pedidoPresenter = await PedidoController.ListarPedidosPorStatus(
-                dbconnection,
-                req.params.statusPedido,
-                page,
-                limit,
-                orderField,
-                orderDirection
-            );
+      const pedidoPresenter = await PedidoController.ListarPedidosPorStatus(
+        dbconnection,
+        req.params.statusPedido,
+        page,
+        limit,
+        orderField,
+        orderDirection
+      );
 
-            ApiResponsePedidos.responseJson(pedidoPresenter, res);
-        });
+      ApiResponsePedidos.responseJson(pedidoPresenter, res);
+    });
 
-        app.get("/pedido/:pedidoId", async (req, res) => {
-            /**
+    app.get("/pedido/:pedidoId", async (req, res) => {
+      /**
                 #swagger.tags = ['Pedidos']
                 #swagger.path = '/pedido/{pedidoId}'
                 #swagger.method = 'get'
@@ -258,18 +286,28 @@ export class ApiPedidos {
                 }
             */
 
-            if (req.params.pedidoId === undefined || req.params.pedidoId === "" || req.params.pedidoId === null) {
-                ApiResponsePedidos.responseJson(PedidoAdapter.validateError("Erro: ID do pedido não informado."), res);
-            }
+      if (
+        req.params.pedidoId === undefined ||
+        req.params.pedidoId === "" ||
+        req.params.pedidoId === null
+      ) {
+        ApiResponsePedidos.responseJson(
+          PedidoAdapter.validateError("Erro: ID do pedido não informado."),
+          res
+        );
+      }
 
-            const pedidoId = req.params.pedidoId;
-            const pedidoPresenter = await PedidoController.BuscaPedidoPorId(dbconnection, pedidoId);
+      const pedidoId = req.params.pedidoId;
+      const pedidoPresenter = await PedidoController.BuscaPedidoPorId(
+        dbconnection,
+        pedidoId
+      );
 
-            ApiResponsePedidos.responseJson(pedidoPresenter, res);
-        });
+      ApiResponsePedidos.responseJson(pedidoPresenter, res);
+    });
 
-        app.put("/pedido/:pedidoId/cancelar", async (req, res) => {
-            /**
+    app.put("/pedido/:pedidoId/cancelar", async (req, res) => {
+      /**
                 #swagger.tags = ['Pedidos']
                 #swagger.path = '/pedido/{pedidoId}/cancelar'
                 #swagger.method = 'put'
@@ -281,18 +319,28 @@ export class ApiPedidos {
                 }]
                 #swagger.produces = ["application/json"]
             */
-            if (req.params.pedidoId === undefined || req.params.pedidoId === "" || req.params.pedidoId === null) {
-                ApiResponsePedidos.responseJson(PedidoAdapter.validateError("Erro: ID do pedido não informado."), res);
-            }
+      if (
+        req.params.pedidoId === undefined ||
+        req.params.pedidoId === "" ||
+        req.params.pedidoId === null
+      ) {
+        ApiResponsePedidos.responseJson(
+          PedidoAdapter.validateError("Erro: ID do pedido não informado."),
+          res
+        );
+      }
 
-            const pedidoId = req.params.pedidoId;
-            const pedidoPresenter = await PedidoController.CancelarPedido(dbconnection, pedidoId);
+      const pedidoId = req.params.pedidoId;
+      const pedidoPresenter = await PedidoController.CancelarPedido(
+        dbconnection,
+        pedidoId
+      );
 
-            ApiResponsePedidos.responseJson(pedidoPresenter, res);
-        });
+      ApiResponsePedidos.responseJson(pedidoPresenter, res);
+    });
 
-        app.put("/pedido/:pedidoId/confirmacao-pagamento", async (req, res) => {
-            /**
+    app.put("/pedido/:pedidoId/confirmacao-pagamento", async (req, res) => {
+      /**
                 #swagger.tags = ['Descontinuadas - Mantidas para Testes Locais']
                 #swagger.path = '/pedido/{pedidoId}/confirmacao-pagamento'
                 #swagger.method = 'put'
@@ -337,18 +385,29 @@ export class ApiPedidos {
                 }
             */
 
-            if (req.params.pedidoId === undefined || req.params.pedidoId === "" || req.params.pedidoId === null) {
-                ApiResponsePedidos.responseJson(PedidoAdapter.validateError("Erro: ID do pedido não informado."), res)
-            }
+      if (
+        req.params.pedidoId === undefined ||
+        req.params.pedidoId === "" ||
+        req.params.pedidoId === null
+      ) {
+        ApiResponsePedidos.responseJson(
+          PedidoAdapter.validateError("Erro: ID do pedido não informado."),
+          res
+        );
+      }
 
-            const pedidoId = req.params.pedidoId;
-            const pedidoPresenter = await PedidoController.ConfirmarPagamentoPedido(dbconnection, servicoPagamento, pedidoId);
+      const pedidoId = req.params.pedidoId;
+      const pedidoPresenter = await PedidoController.ConfirmarPagamentoPedido(
+        dbconnection,
+        servicoPagamento,
+        pedidoId
+      );
 
-            ApiResponsePedidos.responseJson(pedidoPresenter, res);
-        });
+      ApiResponsePedidos.responseJson(pedidoPresenter, res);
+    });
 
-        app.put("/pedido/:pedidoId/checkout", async (req, res) => {
-            /**
+    app.put("/pedido/:pedidoId/checkout", async (req, res) => {
+      /**
                 #swagger.method = 'put'
                 #swagger.tags = ['Pedidos']
                 #swagger.path = '/pedido/{pedidoId}/checkout'
@@ -390,18 +449,29 @@ export class ApiPedidos {
                 }
             */
 
-            if (req.params.pedidoId === undefined || req.params.pedidoId === "" || req.params.pedidoId === null) {
-                ApiResponsePedidos.responseJson(PedidoAdapter.validateError("Erro: ID do pedido não informado."), res)
-            }
+      if (
+        req.params.pedidoId === undefined ||
+        req.params.pedidoId === "" ||
+        req.params.pedidoId === null
+      ) {
+        ApiResponsePedidos.responseJson(
+          PedidoAdapter.validateError("Erro: ID do pedido não informado."),
+          res
+        );
+      }
 
-            const pedidoId = req.params.pedidoId;
-            const pedidoPresenter = await PedidoController.CheckoutPedido(dbconnection, servicoPagamento, pedidoId);
+      const pedidoId = req.params.pedidoId;
+      const pedidoPresenter = await PedidoController.CheckoutPedido(
+        dbconnection,
+        servicoPagamento,
+        pedidoId
+      );
 
-            ApiResponsePedidos.responseJson(pedidoPresenter, res);
-        });
+      ApiResponsePedidos.responseJson(pedidoPresenter, res);
+    });
 
-        app.post("/pedido/:pedidoId/combo", async (req, res) => {
-            /**
+    app.post("/pedido/:pedidoId/combo", async (req, res) => {
+      /**
                 #swagger.tags = ['Pedidos']
                 #swagger.path = '/pedido/{pedidoId}/combo'
                 #swagger.method = 'post'
@@ -479,34 +549,45 @@ export class ApiPedidos {
                 }
             */
 
-            if (req.params.pedidoId === undefined || req.params.pedidoId === "" || req.params.pedidoId === null) {
-                ApiResponsePedidos.responseJson(PedidoAdapter.validateError("Erro: ID do pedido não informado."), res)
-            }
+      if (
+        req.params.pedidoId === undefined ||
+        req.params.pedidoId === "" ||
+        req.params.pedidoId === null
+      ) {
+        ApiResponsePedidos.responseJson(
+          PedidoAdapter.validateError("Erro: ID do pedido não informado."),
+          res
+        );
+      }
 
-            if (req.body === undefined || Object.keys(req.body).length === 0) {
-                ApiResponsePedidos.responseJson(PedidoAdapter.validateError("Erro: Sem dados no Body da requisição."), res);
-            }
+      if (req.body === undefined || Object.keys(req.body).length === 0) {
+        ApiResponsePedidos.responseJson(
+          PedidoAdapter.validateError("Erro: Sem dados no Body da requisição."),
+          res
+        );
+      }
 
-            const pedidoId = req.params.pedidoId;
-            const lancheId = req.body.lancheId;
-            const bebidaId = req.body.bebidaId;
-            const sobremesaId = req.body.sobremesaId;
-            const acompanhamentoId = req.body.acompanhamentoId;
+      const pedidoId = req.params.pedidoId;
+      const lancheId = req.body.lancheId;
+      const bebidaId = req.body.bebidaId;
+      const sobremesaId = req.body.sobremesaId;
+      const acompanhamentoId = req.body.acompanhamentoId;
 
-            const pedidoPresenter = await PedidoController.AdicionarComboAoPedido(
-                dbconnection,
-                pedidoId,
-                lancheId,
-                bebidaId,
-                sobremesaId,
-                acompanhamentoId
-            );
+      const pedidoPresenter = await PedidoController.AdicionarComboAoPedido(
+        dbconnection,
+        productService,
+        pedidoId,
+        lancheId,
+        bebidaId,
+        sobremesaId,
+        acompanhamentoId
+      );
 
-            ApiResponsePedidos.responseJson(pedidoPresenter, res);
-        });
+      ApiResponsePedidos.responseJson(pedidoPresenter, res);
+    });
 
-        app.delete("/pedido/:pedidoId/combo/:comboId", async (req, res) => {
-            /**
+    app.delete("/pedido/:pedidoId/combo/:comboId", async (req, res) => {
+      /**
                 #swagger.tags = ['Pedidos']
                 #swagger.path = '/pedido/{pedidoId}/combo/{comboId}'
                 #swagger.method = 'delete'
@@ -555,24 +636,38 @@ export class ApiPedidos {
                 }
             */
 
-            if (req.params.pedidoId === undefined || req.params.pedidoId === "" || req.params.pedidoId === null) {
-                ApiResponsePedidos.responseJson(PedidoAdapter.validateError("Erro: ID do pedido não informado."), res)
-            }
+      if (
+        req.params.pedidoId === undefined ||
+        req.params.pedidoId === "" ||
+        req.params.pedidoId === null
+      ) {
+        ApiResponsePedidos.responseJson(
+          PedidoAdapter.validateError("Erro: ID do pedido não informado."),
+          res
+        );
+      }
 
-            if (req.params.comboId === undefined || req.params.comboId === "" || req.params.comboId === null) {
-                ApiResponsePedidos.responseJson(PedidoAdapter.validateError("Erro: ID do combo não informado."), res)
-            }
+      if (
+        req.params.comboId === undefined ||
+        req.params.comboId === "" ||
+        req.params.comboId === null
+      ) {
+        ApiResponsePedidos.responseJson(
+          PedidoAdapter.validateError("Erro: ID do combo não informado."),
+          res
+        );
+      }
 
-            const pedidoId = req.params.pedidoId;
-            const comboId = req.params.comboId;
+      const pedidoId = req.params.pedidoId;
+      const comboId = req.params.comboId;
 
-            const pedidoPresenter = await PedidoController.RemoverComboDoPedido(
-                dbconnection,
-                pedidoId,
-                comboId
-            );
+      const pedidoPresenter = await PedidoController.RemoverComboDoPedido(
+        dbconnection,
+        pedidoId,
+        comboId
+      );
 
-            ApiResponsePedidos.responseJson(pedidoPresenter, res);
-        });
-    }
+      ApiResponsePedidos.responseJson(pedidoPresenter, res);
+    });
+  }
 }

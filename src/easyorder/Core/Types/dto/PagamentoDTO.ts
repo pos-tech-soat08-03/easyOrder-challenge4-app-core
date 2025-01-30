@@ -1,6 +1,5 @@
 export type PagamentoDTO = {
-    id: string;
-    status: string;
-    payload: string;
-  };
-  
+  id: string;
+  status: string;
+  payload: string;
+};

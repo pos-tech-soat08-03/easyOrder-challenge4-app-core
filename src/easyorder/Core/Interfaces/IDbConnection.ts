@@ -1,7 +1,7 @@
-import { ConnectionInfo } from '../Types/ConnectionInfo';
-import { Gateways } from '../Types/Gateways';
+import { DBConnectionInfo } from "../Types/ConnectionInfo";
+import { DBGateways } from "../Types/Gateways";
 
 export interface IDbConnection {
-  readonly gateways: Gateways;
-  readonly dbConnection: ConnectionInfo;
+  readonly gateways: DBGateways;
+  readonly dbConnection: DBConnectionInfo;
 }
