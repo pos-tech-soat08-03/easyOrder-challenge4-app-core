@@ -1,12 +1,12 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: easyorder-hp 
+  name: easyorder-app-core-hp 
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: easyorder-deployment
+    name: easyorder-app-core-deployment
   minReplicas: 1
   maxReplicas: 5
   metrics:
