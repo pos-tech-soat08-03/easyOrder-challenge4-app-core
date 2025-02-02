@@ -1,7 +1,7 @@
 import axios from "axios";
 import { exit } from "process";
 
-const BASE_URL = "http://localhost:30000";
+const BASE_URL = "http://localhost:3000";
 
 describe("Teste Fim-a-fim: Pedido a Produção", () => {
   let produtoLancheId: string;

@@ -34,7 +34,7 @@ const servicoProduto = new ProdutoService(msProductConnection);
 // const servicoPagamento = new PagamentoServiceML();
 
 // Inicialização de framework Express + endpoints default
-const port = Number(process.env.SERVER_PORT || "30000");
+const port = Number(process.env.SERVER_PORT || "3000");
 const app = express();
 DefaultApiEndpoints.start(app);
 
