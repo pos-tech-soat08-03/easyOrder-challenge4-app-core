@@ -94,7 +94,7 @@ export class PedidoGateway implements PedidoGatewayInterface {
   async listarPedidosPorStatus(
     status: StatusPedidoValueObject,
     filter: PedidoGatewayInterfaceFilter
-  ): Promise<PedidoEntity[]> {
+  ): Promise<PedidoEntity[] | null>  {
     let pedidosArray: PedidoEntity[] = [];
 
     const orderColumnReference = {

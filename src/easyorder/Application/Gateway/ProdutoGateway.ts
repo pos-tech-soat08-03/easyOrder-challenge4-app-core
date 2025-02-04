@@ -10,7 +10,7 @@ export class ProdutoGateway implements ProdutoGatewayInterface {
     this.apiUrl = apiUrl;
   }
 
-  public async buscarProdutoPorId(id: string): Promise<ProdutoEntity> {
+  public async buscarProdutoPorId(id: string): Promise<ProdutoEntity | null> {
     try {
       const response = await axios.get(`${this.apiUrl}/produtos/buscar/${id}`);
 
