@@ -13,10 +13,6 @@ export class StatusPedidoValueObject {
 
   constructor(value: StatusPedidoEnum) {
     this.value = value;
-
-    if (!Object.values(StatusPedidoEnum).includes(value)) {
-      throw new Error("Status de pedido inválido");
-    }
   }
 
   getValue(): StatusPedidoEnum {

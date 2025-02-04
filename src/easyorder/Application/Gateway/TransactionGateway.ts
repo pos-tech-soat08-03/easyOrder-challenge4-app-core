@@ -1,5 +1,5 @@
 import { Sequelize, Model, DataTypes, where } from "sequelize";
-import { DBConnectionInfo } from "../../Core/Types/DBConnectionInfo";
+import { DBConnectionInfo } from "../../Core/Types/ConnectionInfo";
 import { TransactionGatewayInterface } from "../../Core/Interfaces/Gateway/TransactionGatewayInterface";
 import { TransactionEntity } from "../../Core/Entity/TransactionEntity";
 import {

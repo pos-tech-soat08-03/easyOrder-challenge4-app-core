@@ -4,7 +4,8 @@
   "description": "easyOrder: Aplicação Tech Challenge POS TECH SOAT8 FIAP",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --testLocationInResults --no-coverage --reporters default --colors --watchAll=false --testPathPattern src/test",
+    "test-coverage": "jest --testLocationInResults --coverage --colors --testPathPattern src/test",
     "start": "node dist/index.js",
     "build": "tsc",
     "serve": "node dist/app.js",
