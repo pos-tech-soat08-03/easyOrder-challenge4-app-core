@@ -24,6 +24,6 @@ export interface PedidoGatewayInterface {
   listarPedidosPorStatus(
     status: StatusPedidoValueObject,
     filter: PedidoGatewayInterfaceFilter
-  ): Promise<PedidoEntity[]>;
+  ): Promise<PedidoEntity[] | null>;
   buscaPedidoPorId(id: string): Promise<PedidoEntity | null>;
 }

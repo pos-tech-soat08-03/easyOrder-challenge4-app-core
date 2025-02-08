@@ -1,4 +1,3 @@
-import { ProdutoService } from "../../Infrastructure/Service/ProdutoService";
 import { PedidoComboEntity } from "../Entity/PedidoComboEntity";
 import { PedidoEntity } from "../Entity/PedidoEntity";
 import { TransactionEntity } from "../Entity/TransactionEntity";
@@ -9,7 +8,6 @@ import { PedidoGatewayInterface, PedidoGatewayInterfaceFilterOrderDirection, Ped
 import { ProdutoGatewayInterface } from "../Interfaces/Gateway/ProdutoGatewayInterface";
 import { TransactionGatewayInterface } from "../Interfaces/Gateway/TransactionGatewayInterface";
 import { PagamentoServiceInterface } from "../Interfaces/Services/PagamentoServiceInterface";
-import { MSConnectionInfo } from "../Types/ConnectionInfo";
 import { DataNotFoundException, ValidationErrorException } from "../Types/ExceptionType";
 
 export class PedidoUsecases {

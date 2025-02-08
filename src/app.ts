@@ -24,6 +24,7 @@ const mysqlConnection = new MySQLConnection({
   password: process.env.DATABASE_PASS || "ERROR",
   databaseType: "mysql",
 });
+
 const msProductConnection: MSConnectionInfo = {
   url: process.env.PRODUCT_URL || "ERROR",
 };
