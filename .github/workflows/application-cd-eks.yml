@@ -118,6 +118,7 @@ jobs:
         kubectl apply -f easyorder-app-core-configmap.yaml
         kubectl apply -f svc-easyorder-app-core.yaml
         kubectl apply -f svc-easyorder-app-core-database.yaml
+        kubectl apply -f pv-easyorder-app-core-database.yaml
         kubectl apply -f pvc-easyorder-app-core-database.yaml
         kubectl apply -f easyorder-app-core-hpa.yaml
         kubectl apply -f easyorder-app-core-database-deployment.yaml
