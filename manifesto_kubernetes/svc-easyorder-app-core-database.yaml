@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: svc-easyorder-database
+  name: svc-easyorder-app-core-database
 spec:
   type: ClusterIP
   selector:
-    app: easyorder-database
+    app: easyorder-app-core-database
   ports:
   - port: 3306

@@ -18,7 +18,7 @@ COPY tsconfig.json ./
 RUN npm run build
 
 # Exposição da porta na qual a aplicação irá rodar
-EXPOSE 30000
+EXPOSE 3000
 
 # Comando para iniciar a aplicação
 CMD ["node", "/app/dist/app.js"]

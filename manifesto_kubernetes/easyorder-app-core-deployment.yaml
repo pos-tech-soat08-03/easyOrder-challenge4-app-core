@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: easyorder-app-core-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: easyorder-app-core
+  template:
+    metadata:
+      name: easyorder-app-core
+      labels:
+        app: easyorder-app-core
+    spec:
+      containers:
+      - name: easyorder-app-core-container
+        image: brunomoreirareis/easyorder-app-core:latest
+        resources:
+          requests:
+            memory: "500Mi"
+            cpu: "250m"
+            ephemeral-storage: "3Gi"
+          limits:
+            memory: "1000Mi"
+            cpu: "500m"
+            ephemeral-storage: "3Gi"
+        ports:
+        - containerPort: 3000
+        envFrom:
+        - configMapRef:
+            name: easyorder-app-core-configmap
+            optional: true
