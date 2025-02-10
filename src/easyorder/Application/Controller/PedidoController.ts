@@ -138,19 +138,17 @@ export class PedidoController {
 
   public static async ConfirmarPagamentoPedido(
     dbConnection: IDbConnection,
-    servicoPagamento: PagamentoServiceInterface,
     pedidoId: string
   ): Promise<PedidoAdapter> {
     try {
       const pedidoGateway = dbConnection.gateways.pedidoGateway;
-      const transactionGateway = dbConnection.gateways.transactionGateway;
 
       const response = await PedidoUsecases.ConfirmarPagamentoPedido(
         pedidoGateway,
         pedidoId
       );
 
-      if (!response.pedido) {
+      if (!response) {
         throw new DataNotFoundException("Pedido não encontrado.");
       }
 
@@ -197,7 +195,6 @@ export class PedidoController {
       if (error instanceof ValidationErrorException) {
         return PedidoAdapter.validateError(error.message);
       }
-      console.log("Erro encontrado: " + error.message);
       return PedidoAdapter.systemError("Erro ao Checkout pedido.");
     }
   }

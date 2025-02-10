@@ -17,3 +17,6 @@ local/
 # Definições de execução local
 docker-compose.override.yml
 *.fake.*
+
+# Coverage directory
+coverage/
