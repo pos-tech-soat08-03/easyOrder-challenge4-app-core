@@ -1,4 +1,4 @@
-name: Application CI - Verificar Dependencias e Buildar
+name: Application CI - Verificar Dependencias e Build, Cobertura de Testes e Qualidade Código (SonarCloud)
 
 on:
   push:
@@ -10,6 +10,9 @@ on:
     branches:
       - "main"        
   
+permissions:
+  pull-requests: read # allows SonarCloud to decorate PRs with analysis results
+
 jobs:
   lint-and-build:
     name: Code Check Dependencies and Build
@@ -33,3 +36,38 @@ jobs:
       # Step 5: Compilação do código TypeScript
       - name: Build project
         run: npm run build
+
+      # Step 6: Executar testes
+      - name: Run tests with coverage
+        run: npm run test-coverage
+
+      # Listar arquivos no diretório de cobertura
+      - name: List coverage directory
+        run: ls -l coverage
+
+      # Step 7: Analisar com SonarCloud
+      - name: Analyze with SonarCloud
+
+        # You can pin the exact commit or the version.
+        # uses: SonarSource/sonarcloud-github-action@v2.2.0
+        uses: SonarSource/sonarcloud-github-action@4006f663ecaf1f8093e8e4abb9227f6041f52216
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
+        with:
+          # Additional arguments for the SonarScanner CLI
+          args: |
+            # Unique keys of your project and organization. You can find them in SonarCloud > Information (bottom-left menu)
+            # mandatory
+            -Dsonar.projectKey=pos-tech-soat08-03_easyOrder-challenge4-app-core
+            -Dsonar.organization=pos-tech-soat08-03
+            # Comma-separated paths to directories containing main source files.
+            -Dsonar.sources=./src
+            -Dsonar.exclusions=**/tests/**
+            -Dsonar.tests=./src/tests
+            -Dsonar.test.inclusions=./src/tests/**/*.test.tsx,./src/tests/**/*.test.ts
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            # optional. For more info about Code Coverage, please refer to https://docs.sonarcloud.io/enriching/test-coverage/overview/
+            # Adds more detail to both client and server-side analysis logs, activating DEBUG mode for the scanner, and adding client-side environment variables and system properties to the server-side log of analysis report processing.
+            #-Dsonar.verbose= # optional, default is false
+          # When you need the analysis to take place in a directory other than the one from which it was launched, default is .
+          projectBaseDir: .
