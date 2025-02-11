@@ -5,7 +5,6 @@ import { PedidoController } from "../../Application/Controller/PedidoController"
 import { PedidoAdapter } from "../../Application/Presenter/PedidoAdapter";
 import { PagamentoServiceInterface } from "../../Core/Interfaces/Services/PagamentoServiceInterface";
 import { ApiResponsePedidos } from "./utils/ApiResponsePedidos";
-import { MSConnectionInfo } from "../../Core/Types/ConnectionInfo";
 import { ProdutoService } from "../Service/ProdutoService";
 
 export class ApiPedidos {
@@ -399,7 +398,6 @@ export class ApiPedidos {
       const pedidoId = req.params.pedidoId;
       const pedidoPresenter = await PedidoController.ConfirmarPagamentoPedido(
         dbconnection,
-        servicoPagamento,
         pedidoId
       );
 

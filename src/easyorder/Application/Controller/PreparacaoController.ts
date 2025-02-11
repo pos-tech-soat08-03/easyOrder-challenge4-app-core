@@ -3,7 +3,7 @@ import {
   DataNotFoundException,
   ValidationErrorException,
 } from "../../Core/Types/ExceptionType";
-import { PreparacaoUseCases } from "../../Core/Usecase/PreparacaoUseCases";
+import { PreparacaoUseCases } from "../../Core/Usecase/PreparacaoUsecases";
 import { PedidoAdapter } from "../Presenter/PedidoAdapter";
 
 export class PreparacaoController {

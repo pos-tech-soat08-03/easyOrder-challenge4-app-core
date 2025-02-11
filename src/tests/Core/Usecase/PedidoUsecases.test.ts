@@ -1,3 +1,4 @@
+import { rejects } from "assert";
 import { PedidoComboEntity } from "../../../easyorder/Core/Entity/PedidoComboEntity";
 import { PedidoEntity } from "../../../easyorder/Core/Entity/PedidoEntity";
 import { ProdutoEntity } from "../../../easyorder/Core/Entity/ProdutoEntity";
@@ -8,10 +9,7 @@ import {
   StatusPedidoEnum,
   StatusPedidoValueObject,
 } from "../../../easyorder/Core/Entity/ValueObject/StatusPedidoValueObject";
-import {
-  PedidoGatewayInterface,
-  PedidoGatewayInterfaceFilter,
-} from "../../../easyorder/Core/Interfaces/Gateway/PedidoGatewayInterface";
+import { PedidoGatewayInterface } from "../../../easyorder/Core/Interfaces/Gateway/PedidoGatewayInterface";
 import { ProdutoGatewayInterface } from "../../../easyorder/Core/Interfaces/Gateway/ProdutoGatewayInterface";
 import { TransactionGatewayInterface } from "../../../easyorder/Core/Interfaces/Gateway/TransactionGatewayInterface";
 import { PagamentoServiceInterface } from "../../../easyorder/Core/Interfaces/Services/PagamentoServiceInterface";
@@ -23,9 +21,35 @@ describe("PedidoUsecases", () => {
   let transactionGateway: jest.Mocked<TransactionGatewayInterface>;
   let pagamentoService: jest.Mocked<PagamentoServiceInterface>;
   let pedido: PedidoEntity;
+  let lanche: ProdutoEntity;
+  let bebida: ProdutoEntity;
+  let sobremesa: ProdutoEntity;
+  let acompanhamento: ProdutoEntity;
   const clienteId = "aa9b1222-0ba2-4388-9bde-e1a1d5ca1015";
+  const pedidoId = "pedido-123";
+
+  const criarProduto = (
+    nome: string,
+    preco: number,
+    categoria: any,
+    id: string
+  ) => new ProdutoEntity(nome, "Descrição", preco, categoria, "url", id);
+
+  const criarPedido = (
+    statusPedido: StatusPedidoEnum,
+    statusPagamento: StatusPagamentoEnum,
+    id = pedidoId,
+    combo: PedidoComboEntity[] = []
+  ) =>
+    new PedidoEntity(
+      clienteId,
+      new Date(),
+      new StatusPedidoValueObject(statusPedido),
+      statusPagamento,
+      id,
+      combo
+    );
   beforeEach(() => {
-    pedido = new PedidoEntity(clienteId);
     pedidoGateway = {
       salvarPedido: jest.fn(),
       listarPedidosPorStatus: jest.fn(),
@@ -47,6 +71,12 @@ describe("PedidoUsecases", () => {
   });
 
   describe("CadastrarPedido", () => {
+    beforeEach(() => {
+      pedido = criarPedido(
+        StatusPedidoEnum.EM_ABERTO,
+        StatusPagamentoEnum.PENDENTE
+      );
+    });
     it("deve cadastrar um pedido com clientId definido", async () => {
       pedidoGateway.salvarPedido.mockResolvedValue(pedido);
 
@@ -83,8 +113,14 @@ describe("PedidoUsecases", () => {
   });
 
   describe("ListarPedidosPorStatus", () => {
+    beforeEach(() => {
+      pedido = criarPedido(
+        StatusPedidoEnum.EM_ABERTO,
+        StatusPagamentoEnum.PENDENTE
+      );
+    });
     it("deve listar pedidos por status", async () => {
-      const pedidos = [new PedidoEntity("cliente-123")];
+      const pedidos = [pedido];
       pedidoGateway.listarPedidosPorStatus.mockResolvedValue(pedidos);
 
       const resultado = await PedidoUsecases.ListarPedidosPorStatus(
@@ -132,6 +168,12 @@ describe("PedidoUsecases", () => {
   });
 
   describe("BuscaPedidoPorId", () => {
+    beforeEach(() => {
+      pedido = criarPedido(
+        StatusPedidoEnum.EM_ABERTO,
+        StatusPagamentoEnum.PENDENTE
+      );
+    });
     it("deve buscar um pedido por ID", async () => {
       pedidoGateway.buscaPedidoPorId.mockResolvedValue(pedido);
 
@@ -154,6 +196,12 @@ describe("PedidoUsecases", () => {
   });
 
   describe("CancelarPedido", () => {
+    beforeEach(() => {
+      pedido = criarPedido(
+        StatusPedidoEnum.EM_ABERTO,
+        StatusPagamentoEnum.PENDENTE
+      );
+    });
     it("deve cancelar um pedido", async () => {
       pedidoGateway.buscaPedidoPorId.mockResolvedValue(pedido);
       pedidoGateway.salvarPedido.mockResolvedValue(pedido);
@@ -198,18 +246,16 @@ describe("PedidoUsecases", () => {
   });
 
   describe("ConfirmarPagamentoPedido", () => {
-    const pedidoConfirmaPagamento = new PedidoEntity(
-      "cliente-id1",
-      new Date("23/07/1993"),
-      new StatusPedidoValueObject(StatusPedidoEnum.AGUARDANDO_PAGAMENTO),
-      StatusPagamentoEnum.PENDENTE,
-      "pedidoId",
-      []
-    );
+    beforeEach(() => {
+      pedido = criarPedido(
+        StatusPedidoEnum.AGUARDANDO_PAGAMENTO,
+        StatusPagamentoEnum.PENDENTE,
+        "pedidoId"
+      );
+    });
     it("deve confirmar o pagamento de um pedido", async () => {
-
-      pedidoGateway.buscaPedidoPorId.mockResolvedValue(pedidoConfirmaPagamento);
-      pedidoGateway.salvarPedido.mockResolvedValue(pedidoConfirmaPagamento);
+      pedidoGateway.buscaPedidoPorId.mockResolvedValue(pedido);
+      pedidoGateway.salvarPedido.mockResolvedValue(pedido);
 
       const resultado = await PedidoUsecases.ConfirmarPagamentoPedido(
         pedidoGateway,
@@ -226,7 +272,6 @@ describe("PedidoUsecases", () => {
     });
 
     it("deve lançar erro se o pedido já estiver cancelado", async () => {
-      const pedido = new PedidoEntity("cliente-123");
       pedido.setStatusPedido(
         new StatusPedidoValueObject(StatusPedidoEnum.CANCELADO)
       );
@@ -244,17 +289,13 @@ describe("PedidoUsecases", () => {
       ).rejects.toThrow("Pedido não encontrado");
     });
     it("deve lançar erro ao não salvar o pedido", async () => {
-      const pedidoErroAoSalvar = new PedidoEntity(
-        "cliente-id1",
-        new Date("23/07/1993"),
-        new StatusPedidoValueObject(StatusPedidoEnum.AGUARDANDO_PAGAMENTO),
+      pedido = criarPedido(
+        StatusPedidoEnum.AGUARDANDO_PAGAMENTO,
         StatusPagamentoEnum.PENDENTE,
-        "pedidoId",
-        []
+        "pedidoId"
       );
-      pedidoGateway.buscaPedidoPorId.mockResolvedValue(pedidoErroAoSalvar);
+      pedidoGateway.buscaPedidoPorId.mockResolvedValue(pedido);
       pedidoGateway.salvarPedido.mockResolvedValue(null);
-
 
       await expect(
         PedidoUsecases.ConfirmarPagamentoPedido(pedidoGateway, "pedido-123")
@@ -263,42 +304,28 @@ describe("PedidoUsecases", () => {
   });
 
   describe("CheckoutPedido", () => {
-    const lanche = new ProdutoEntity(
-      "Lanche 1",
-      "Delicioso lanche com queijo e hambúrguer",
-      20,
-      CategoriaEnum.LANCHE,
-      "https://exemplo.com/lanche1.jpg"
-    );
+    let transacao: TransactionEntity;
+    beforeEach(() => {
+      const lanche = criarProduto("Lanche 1", 20, CategoriaEnum.LANCHE, "1");
+      const bebida = criarProduto("Bebida 1", 10, CategoriaEnum.BEBIDA, "2");
+      const combo = new PedidoComboEntity(lanche, bebida, null, null);
+      pedido = criarPedido(
+        StatusPedidoEnum.EM_ABERTO,
+        StatusPagamentoEnum.PENDENTE,
+        "pedidoId",
+        [combo]
+      );
+      transacao = new TransactionEntity(pedido.getId(), pedido.getValorTotal());
+    });
 
-    const bebida = new ProdutoEntity(
-      "Bebida 1",
-      "Refrigerante gelado",
-      10,
-      CategoriaEnum.BEBIDA,
-      "https://exemplo.com/bebida1.jpg"
-    );
-    const combo = new PedidoComboEntity(lanche, bebida, null, null);
-    const pedidoCheckoutMock = new PedidoEntity(
-      "cliente-id2",
-      new Date("23/07/1993"),
-      new StatusPedidoValueObject(StatusPedidoEnum.EM_ABERTO),
-      StatusPagamentoEnum.PENDENTE,
-      "pedidoId",
-      [combo]
-    );
-    const transacao = new TransactionEntity(
-      pedidoCheckoutMock.getId(),
-      pedidoCheckoutMock.getValorTotal()
-    );
     it("deve realizar o checkout de um pedido", async () => {
-      pedidoGateway.buscaPedidoPorId.mockResolvedValue(pedidoCheckoutMock);
+      pedidoGateway.buscaPedidoPorId.mockResolvedValue(pedido);
       transactionGateway.salvarTransaction.mockResolvedValue();
       pagamentoService.processPayment.mockResolvedValue(transacao);
       transactionGateway.atualizarTransactionsPorId.mockResolvedValue(
         transacao
       );
-      pedidoGateway.salvarPedido.mockResolvedValue(pedidoCheckoutMock);
+      pedidoGateway.salvarPedido.mockResolvedValue(pedido);
 
       const resultado = await PedidoUsecases.CheckoutPedido(
         pedidoGateway,
@@ -327,7 +354,7 @@ describe("PedidoUsecases", () => {
     });
 
     it("deve lançar erro ao salvar a transação", async () => {
-      pedidoGateway.buscaPedidoPorId.mockResolvedValue(pedidoCheckoutMock);
+      pedidoGateway.buscaPedidoPorId.mockResolvedValue(pedido);
       transactionGateway.salvarTransaction.mockRejectedValue(
         new Error("Erro ao salvar transação")
       );
@@ -343,11 +370,9 @@ describe("PedidoUsecases", () => {
     });
 
     it("deve lançar erro ao processar o pagamento", async () => {
-      pedidoGateway.buscaPedidoPorId.mockResolvedValue(pedidoCheckoutMock);
+      pedidoGateway.buscaPedidoPorId.mockResolvedValue(pedido);
       transactionGateway.salvarTransaction.mockResolvedValue();
-      pagamentoService.processPayment.mockRejectedValue(
-        new Error("Erro ao enviar transação para o pagamento")
-      );
+      pagamentoService.processPayment.mockResolvedValue(null);
 
       await expect(
         PedidoUsecases.CheckoutPedido(
@@ -358,20 +383,74 @@ describe("PedidoUsecases", () => {
         )
       ).rejects.toThrow("Erro ao enviar transação para o pagamento");
     });
+
+    it("deve lançar erro ao atualizar lançar transaction por id", async () => {
+      pedidoGateway.buscaPedidoPorId.mockResolvedValue(pedido);
+      transactionGateway.salvarTransaction.mockResolvedValue();
+      pagamentoService.processPayment.mockResolvedValue(transacao);
+      transactionGateway.atualizarTransactionsPorId.mockResolvedValue(
+        undefined
+      );
+
+      await expect(
+        PedidoUsecases.CheckoutPedido(
+          pedidoGateway,
+          transactionGateway,
+          pagamentoService,
+          "pedidoId"
+        )
+      ).rejects.toThrow("Erro ao salvar transacao atualizada.");
+    });
+    it("deve lançar erro ao salvar pedido", async () => {
+      pedidoGateway.buscaPedidoPorId.mockResolvedValue(pedido);
+      transactionGateway.salvarTransaction.mockResolvedValue();
+      pagamentoService.processPayment.mockResolvedValue(transacao);
+      transactionGateway.atualizarTransactionsPorId.mockResolvedValue(
+        transacao
+      );
+      pedidoGateway.salvarPedido.mockResolvedValue(null);
+
+      await expect(
+        PedidoUsecases.CheckoutPedido(
+          pedidoGateway,
+          transactionGateway,
+          pagamentoService,
+          "pedidoId"
+        )
+      ).rejects.toThrow("Erro ao salvar o pedido atualizado.");
+    });
   });
 
   describe("AdicionarComboAoPedido", () => {
-    it("deve adicionar um combo ao pedido", async () => {
-      const lanche = new ProdutoEntity(
-        "Lanche",
-        "Descrição",
-        20,
-        CategoriaEnum.LANCHE,
-        "url"
+    beforeEach(() => {
+      pedido = criarPedido(
+        StatusPedidoEnum.EM_ABERTO,
+        StatusPagamentoEnum.PENDENTE,
+        "pedidoId"
       );
+      lanche = criarProduto("Lanche", 20, CategoriaEnum.LANCHE, "lanche-123");
+      bebida = criarProduto("Bebida", 5, CategoriaEnum.BEBIDA, "bebida-123");
+      sobremesa = criarProduto(
+        "Sobremesa",
+        15,
+        CategoriaEnum.SOBREMESA,
+        "sobremesa-123"
+      );
+      acompanhamento = criarProduto(
+        "Acompanhamento",
+        40,
+        CategoriaEnum.ACOMPANHAMENTO,
+        "acompanhamento-123"
+      );
+    });
 
+    it("deve adicionar um combo ao pedido", async () => {
       pedidoGateway.buscaPedidoPorId.mockResolvedValue(pedido);
-      produtoGateway.buscarProdutoPorId.mockResolvedValue(lanche);
+      produtoGateway.buscarProdutoPorId
+        .mockResolvedValueOnce(lanche)
+        .mockResolvedValueOnce(bebida)
+        .mockResolvedValueOnce(sobremesa)
+        .mockResolvedValueOnce(acompanhamento);
       pedidoGateway.salvarPedido.mockResolvedValue(pedido);
 
       const resultado = await PedidoUsecases.AdicionarComboAoPedido(
@@ -379,9 +458,9 @@ describe("PedidoUsecases", () => {
         produtoGateway,
         "pedido-123",
         "lanche-123",
-        "",
-        "",
-        ""
+        "bebida-123",
+        "sobremesa-123",
+        "acompanhamento-123"
       );
 
       expect(resultado.pedido).toBeInstanceOf(PedidoEntity);
@@ -404,7 +483,7 @@ describe("PedidoUsecases", () => {
       ).rejects.toThrow("Pedido não encontrado");
     });
 
-    it("deve lançar erro se o produto não for encontrado", async () => {
+    it("deve lançar erro se o lanche não for encontrado", async () => {
       pedidoGateway.buscaPedidoPorId.mockResolvedValue(pedido);
       produtoGateway.buscarProdutoPorId.mockResolvedValue(null);
 
@@ -420,7 +499,54 @@ describe("PedidoUsecases", () => {
         )
       ).rejects.toThrow("Lanche não encontrado");
     });
+    it("deve lançar erro se a bebida não for encontrada", async () => {
+      pedidoGateway.buscaPedidoPorId.mockResolvedValue(pedido);
+      produtoGateway.buscarProdutoPorId.mockResolvedValue(null);
 
+      await expect(
+        PedidoUsecases.AdicionarComboAoPedido(
+          pedidoGateway,
+          produtoGateway,
+          "pedido-123",
+          "",
+          "bebida-123",
+          "",
+          ""
+        )
+      ).rejects.toThrow("Bebida não encontrada");
+    });
+    it("deve lançar erro se a sobremesa não for encontrada", async () => {
+      pedidoGateway.buscaPedidoPorId.mockResolvedValue(pedido);
+      produtoGateway.buscarProdutoPorId.mockResolvedValue(null);
+
+      await expect(
+        PedidoUsecases.AdicionarComboAoPedido(
+          pedidoGateway,
+          produtoGateway,
+          "pedido-123",
+          "",
+          "",
+          "sobremesa-123",
+          ""
+        )
+      ).rejects.toThrow("Sobremesa não encontrada");
+    });
+    it("deve lançar erro se o acompanhemento não for encontrado", async () => {
+      pedidoGateway.buscaPedidoPorId.mockResolvedValue(pedido);
+      produtoGateway.buscarProdutoPorId.mockResolvedValue(null);
+
+      await expect(
+        PedidoUsecases.AdicionarComboAoPedido(
+          pedidoGateway,
+          produtoGateway,
+          "pedido-123",
+          "",
+          "",
+          "",
+          "acompanhemento-123"
+        )
+      ).rejects.toThrow("Acompanhamento não encontrado");
+    });
     it("deve lançar erro se o produto não for do tipo esperado", async () => {
       const bebida = new ProdutoEntity(
         "Bebida",
@@ -438,6 +564,54 @@ describe("PedidoUsecases", () => {
           pedidoGateway,
           produtoGateway,
           "pedido-123",
+          "",
+          "",
+          "sobremesa-123",
+          ""
+        )
+      ).rejects.toThrow("Produto informado não é uma sobremesa");
+    });
+    it("deve lançar erro se o produto não for do tipo esperado", async () => {
+      pedidoGateway.buscaPedidoPorId.mockResolvedValue(pedido);
+      produtoGateway.buscarProdutoPorId.mockResolvedValue(bebida);
+
+      await expect(
+        PedidoUsecases.AdicionarComboAoPedido(
+          pedidoGateway,
+          produtoGateway,
+          "pedido-123",
+          "",
+          "",
+          "",
+          "acompanhamento"
+        )
+      ).rejects.toThrow("Produto informado não é um acompanhamento");
+    });
+    it("deve lançar erro se o produto não for do tipo esperado", async () => {
+      pedidoGateway.buscaPedidoPorId.mockResolvedValue(pedido);
+      produtoGateway.buscarProdutoPorId.mockResolvedValue(lanche);
+
+      await expect(
+        PedidoUsecases.AdicionarComboAoPedido(
+          pedidoGateway,
+          produtoGateway,
+          "pedido-123",
+          "",
+          "bebida-123",
+          "",
+          ""
+        )
+      ).rejects.toThrow("Produto informado não é uma bebida");
+    });
+    it("deve lançar erro se o produto não for do tipo esperado", async () => {
+      pedidoGateway.buscaPedidoPorId.mockResolvedValue(pedido);
+      produtoGateway.buscarProdutoPorId.mockResolvedValue(bebida);
+
+      await expect(
+        PedidoUsecases.AdicionarComboAoPedido(
+          pedidoGateway,
+          produtoGateway,
+          "pedido-123",
           "lanche-123",
           "",
           "",
@@ -445,28 +619,48 @@ describe("PedidoUsecases", () => {
         )
       ).rejects.toThrow("Produto informado não é um lanche");
     });
+    it("deve dar um erro de sistema", async () => {
+      pedidoGateway.buscaPedidoPorId.mockResolvedValue(pedido);
+      produtoGateway.buscarProdutoPorId
+        .mockResolvedValueOnce(lanche)
+        .mockResolvedValueOnce(bebida)
+        .mockResolvedValueOnce(sobremesa)
+        .mockResolvedValueOnce(acompanhamento);
+      pedidoGateway.salvarPedido.mockResolvedValue(null);
+
+      await expect(
+        PedidoUsecases.AdicionarComboAoPedido(
+          pedidoGateway,
+          produtoGateway,
+          "pedido-123",
+          "lanche-123",
+          "bebida-123",
+          "sobremesa-123",
+          "acompanhamento-123"
+        )
+      ).rejects.toThrow("Erro ao adicionar combo ao pedido");
+    });
   });
 
   describe("RemoverComboDoPedido", () => {
-    it("deve remover um combo do pedido", async () => {
-      const pedido = new PedidoEntity("cliente-123");
-      const bebida = new ProdutoEntity(
-        "Bebida",
-        "Descrição",
-        10,
-        CategoriaEnum.BEBIDA,
-        "url"
+    beforeEach(() => {
+      pedido = criarPedido(
+        StatusPedidoEnum.EM_ABERTO,
+        StatusPagamentoEnum.PENDENTE,
+        "pedidoId"
       );
-      const combo = new PedidoComboEntity(null, bebida, null, null);
+      bebida = criarProduto("Bebida", 5, CategoriaEnum.BEBIDA, "bebida-123");
+      const combo = new PedidoComboEntity(null, bebida, null, null, "comboId");
       pedido.adicionarCombos([combo]);
-
+    });
+    it("deve remover um combo do pedido", async () => {
       pedidoGateway.buscaPedidoPorId.mockResolvedValue(pedido);
       pedidoGateway.salvarPedido.mockResolvedValue(pedido);
 
       const resultado = await PedidoUsecases.RemoverComboDoPedido(
         pedidoGateway,
         "pedido-123",
-        combo.getId()
+        "comboId"
       );
 
       expect(resultado.pedido).toBeInstanceOf(PedidoEntity);
@@ -483,6 +677,18 @@ describe("PedidoUsecases", () => {
           "combo-123"
         )
       ).rejects.toThrow("Pedido não encontrado");
+    });
+    it("deve lançar erro se o pedido não for encontrado", async () => {
+      pedidoGateway.buscaPedidoPorId.mockResolvedValue(pedido);
+      pedidoGateway.salvarPedido.mockResolvedValue(null);
+
+      await expect(
+        PedidoUsecases.RemoverComboDoPedido(
+          pedidoGateway,
+          "pedido-123",
+          "comboId"
+        )
+      ).rejects.toThrow("Erro ao remover combo do pedido");
     });
   });
 });
