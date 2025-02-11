@@ -1,1 +1,1 @@
-export type DatabaseType = "mysql" | "postgres" | undefined;
+export type DatabaseType = "mysql" | "postgres" | "sqlite" | undefined;

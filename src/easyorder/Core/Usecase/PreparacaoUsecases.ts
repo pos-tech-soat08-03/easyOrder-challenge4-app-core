@@ -69,7 +69,7 @@ export class PreparacaoUseCases {
   public static async finalizaPreparacaoUseCase(
     pedidoGateway: PedidoGatewayInterface,
     pedidoId: string
-  ): Promise<{ pedido: PedidoEntity | undefined; mensagem: string }> {
+  ): Promise<{ pedido: PedidoEntity; mensagem: string }> {
     const pedido = await pedidoGateway.buscaPedidoPorId(pedidoId);
 
     if (!pedido) {
@@ -95,7 +95,7 @@ export class PreparacaoUseCases {
   public static async entregaPedidoUseCase(
     pedidoGateway: PedidoGatewayInterface,
     pedidoId: string
-  ): Promise<{ pedido: PedidoEntity | undefined; mensagem: string }> {
+  ): Promise<{ pedido: PedidoEntity; mensagem: string }> {
     const pedido = await pedidoGateway.buscaPedidoPorId(pedidoId);
 
     if (!pedido) {
