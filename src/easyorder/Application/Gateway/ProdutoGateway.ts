@@ -27,11 +27,6 @@ export class ProdutoGateway implements ProdutoGatewayInterface {
         response.data.id
       );
     } catch (error) {
-      if (error instanceof axios.AxiosError) {
-        throw new DataNotFoundException(
-          `Erro ao buscar produto: ${error.message}`
-        );
-      }
       throw error;
     }
   }
