@@ -18,9 +18,7 @@ local/
 docker-compose.override.yml
 *.fake.*
 
-
-#package-lock.*
-package-lock.*
-
-# Coverage directory
+# Arquivos de cobertura
 coverage/
+.sonar*
+
