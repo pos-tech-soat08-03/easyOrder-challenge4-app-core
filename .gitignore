@@ -18,8 +18,9 @@ local/
 docker-compose.override.yml
 *.fake.*
 
-# Coverage directory
-coverage/
 
 #package-lock.*
 package-lock.*
+
+# Coverage directory
+coverage/
