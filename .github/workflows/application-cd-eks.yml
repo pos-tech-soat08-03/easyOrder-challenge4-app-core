@@ -138,6 +138,8 @@ jobs:
     
     - name: Salvar Informações no S3
       run: |
-        echo "Load Balancer Hostname: ${{ steps.get-load-balancer-hostname.outputs.LB_HOSTNAME }}" > easyorder-app-core_LB.txt
-        echo "Load Balancer Port: ${{ steps.get-load-balancer-hostname.outputs.LB_PORT }}" >> easyorder-app-core_LB.txt
-        aws s3 cp easyorder-app-core_LB.txt s3://${{ github.event.inputs.aws_backend_bucket }}/easyorder-app-core_LB.txt
+        echo '{' > easyorder-app-core.json
+        echo '  "lb_hostname": "${{ steps.get-load-balancer-hostname.outputs.LB_HOSTNAME }}",' >> easyorder-app-core.json
+        echo '  "lb_port": "${{ steps.get-load-balancer-port.outputs.LB_PORT }}"' >> easyorder-app-core.json
+        echo '}' >> easyorder-app-core.json
+        aws s3 cp easyorder-app-core.json s3://${{ github.event.inputs.aws_backend_bucket }}/easyorder-apps/easyorder-app-core.json
