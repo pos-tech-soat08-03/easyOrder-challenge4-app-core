@@ -10,16 +10,16 @@ import { MSConnectionInfo } from "./easyorder/Core/Types/ConnectionInfo";
 
 // Inicialização de banco de dados
 const mysqlConnection = new MySQLConnection({
-  hostname: process.env.DATABASE_HOST || "ERROR",
-  portnumb: Number(process.env.DATABASE_PORT || "0"),
-  database: process.env.DATABASE_NAME || "ERROR",
-  username: process.env.DATABASE_USER || "ERROR",
-  password: process.env.DATABASE_PASS || "ERROR",
+  hostname: process.env.DATABASE_HOST ?? "ERROR",
+  portnumb: Number(process.env.DATABASE_PORT ?? "0"),
+  database: process.env.DATABASE_NAME ?? "ERROR",
+  username: process.env.DATABASE_USER ?? "ERROR",
+  password: process.env.DATABASE_PASS ?? "ERROR",
   databaseType: "mysql",
 });
 
 const msProductConnection: MSConnectionInfo = {
-  url: process.env.PRODUCT_URL || "ERROR",
+  url: process.env.PRODUCT_URL ?? "svc-easyorder-app-produto"
 };
 
 // Inicialização serviços
@@ -27,7 +27,7 @@ const servicoPagamento = new PagamentoServiceMock();
 const servicoProduto = new ProdutoService(msProductConnection);
 
 // Inicialização de framework Express + endpoints default
-const port = Number(process.env.SERVER_PORT || "3000");
+const port = Number(process.env.SERVER_PORT ?? "3000");
 const app = express();
 DefaultApiEndpoints.start(app);
 
