@@ -34,7 +34,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: easyorder-app-core-database-configmap
-                optional: true
       volumes:
         - name: easyorder-app-core-database-persistent-storage
           persistentVolumeClaim:
