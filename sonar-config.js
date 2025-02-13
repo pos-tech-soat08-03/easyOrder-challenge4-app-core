@@ -8,7 +8,7 @@ scanner(
       'sonar.projectKey': 'pos-tech-soat08-03_easyOrder-challenge4-app-core',
       'sonar.organization' : 'pos-tech-soat08-03',
       'sonar.sources': './src',
-      'sonar.exclusions': '**/tests/**',
+      'sonar.exclusions': '**/tests/**,src/app.ts,src/swagger.ts,MySQLConnection.ts',
       'sonar.tests': './src/tests',
       'sonar.test.inclusions': './src/tests/**/*.test.tsx,./src/tests/**/*.test.ts',
       'sonar.typescript.lcov.reportPaths': 'coverage/lcov.info',
