@@ -19,7 +19,7 @@ const mysqlConnection = new MySQLConnection({
 });
 
 const msProductConnection: MSConnectionInfo = {
-  url: process.env.PRODUCT_URL ?? "easyorder-app-produto",
+  url: process.env.PRODUCT_URL ?? "svc-easyorder-app-produto",
 };
 
 // Inicialização serviços
