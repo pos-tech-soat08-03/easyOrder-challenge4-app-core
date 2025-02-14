@@ -2,12 +2,12 @@ import { v4 as uuidv4 } from "uuid";
 import { CategoriaEnum } from "./ValueObject/CategoriaEnum";
 
 export class ProdutoEntity {
-  private id: string;
-  private nome: string;
-  private descricao: string;
-  private preco: number;
-  private categoria: CategoriaEnum;
-  private imagemURL: string;
+  public id: string;
+  public nome: string;
+  public descricao: string;
+  public preco: number;
+  public categoria: CategoriaEnum;
+  public imagemURL: string;
 
   constructor(
     nome: string,

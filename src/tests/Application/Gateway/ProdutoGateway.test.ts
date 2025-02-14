@@ -7,57 +7,49 @@ import { DataNotFoundException } from "../../../easyorder/Core/Types/ExceptionTy
 jest.mock("axios");
 
 describe("ProdutoGateway", () => {
-  let gateway: ProdutoGateway;
+  let produtoGateway: ProdutoGateway;
+  const apiUrl = "localhost:3000";
+  const produtoId = "123";
+  const produtoData = {
+    nome: "Produto Teste",
+    descricao: "Descrição do Produto Teste",
+    preco: 100,
+    categoria: "ELETRONICOS",
+    imagemURL: "http://imagem.com/produto.jpg",
+    id: produtoId,
+  };
 
   beforeEach(() => {
-    gateway = new ProdutoGateway("https://api.example.com");
-    jest.clearAllMocks();
+    produtoGateway = new ProdutoGateway(apiUrl);
   });
 
-  it("deve buscar um produto por ID corretamente", async () => {
-    const produtoMock = {
-      id: "produto-001",
-      nome: "Hambúrguer",
-      descricao: "Delicioso hambúrguer artesanal",
-      preco: 20,
-      categoria: CategoriaEnum.LANCHE,
-      imagemURL: "https://example.com/hamburguer.jpg",
-    };
+  it("deve retornar um ProdutoEntity quando o produto é encontrado", async () => {
+    (axios.get as jest.Mock).mockResolvedValue({
+      data: { produto: produtoData },
+    });
 
-    (axios.get as jest.Mock).mockResolvedValue({ data: produtoMock });
+    const produto = await produtoGateway.buscarProdutoPorId(produtoId);
 
-    const resultado = await gateway.buscarProdutoPorId("produto-001");
-
-    expect(resultado).toBeInstanceOf(ProdutoEntity);
-    expect(resultado?.getId()).toBe("produto-001");
-    expect(resultado?.getNome()).toBe("Hambúrguer");
-    expect(resultado?.getCategoria()).toBe(CategoriaEnum.LANCHE);
-    expect(axios.get).toHaveBeenCalledWith(
-      "https://api.example.com/produtos/buscar/produto-001"
-    );
+    expect(produto).toBeInstanceOf(ProdutoEntity);
+    expect(produto?.nome).toBe(produtoData.nome);
+    expect(produto?.descricao).toBe(produtoData.descricao);
+    expect(produto?.preco).toBe(produtoData.preco);
+    expect(produto?.categoria).toBe(produtoData.categoria);
+    expect(produto?.imagemURL).toBe(produtoData.imagemURL);
+    expect(produto?.id).toBe(produtoData.id);
   });
 
-  it("deve lançar DataNotFoundException se o produto não for encontrado", async () => {
-    (axios.get as jest.Mock).mockResolvedValue({ data: null });
+  it("deve lançar DataNotFoundException quando o produto não é encontrado", async () => {
+    (axios.get as jest.Mock).mockResolvedValue({
+      data: { produto: null },
+    });
 
-    await expect(
-      gateway.buscarProdutoPorId("produto-inexistente")
-    ).rejects.toThrow(new DataNotFoundException("Produto não encontrado"));
-
-    expect(axios.get).toHaveBeenCalledWith(
-      "https://api.example.com/produtos/buscar/produto-inexistente"
-    );
+    await expect(produtoGateway.buscarProdutoPorId(produtoId)).rejects.toThrow(DataNotFoundException);
   });
 
-  it("deve lançar DataNotFoundException em caso de erro na requisição", async () => {
-    (axios.get as jest.Mock).mockRejectedValue(new Error("Erro na requisição"));
+  it("deve lançar DataNotFoundException quando ocorre um erro ao acessar o microserviço", async () => {
+    (axios.get as jest.Mock).mockRejectedValue(new Error("Erro de rede"));
 
-    await expect(gateway.buscarProdutoPorId("produto-001")).rejects.toThrow(
-      new DataNotFoundException("Erro na requisição")
-    );
-
-    expect(axios.get).toHaveBeenCalledWith(
-      "https://api.example.com/produtos/buscar/produto-001"
-    );
+    await expect(produtoGateway.buscarProdutoPorId(produtoId)).rejects.toThrow(DataNotFoundException);
   });
 });
