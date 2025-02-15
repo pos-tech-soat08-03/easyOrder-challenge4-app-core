@@ -32,7 +32,6 @@ Repositório da solução no Github:
    
 📹 Link do Vídeo com a explicação sobre o projeto [Link youtube](https://www.youtube.com/watch?v=XXXXXXXXXXX)
 
-
 ## Microserviço Core (Pedido, Pagamento e Preparação) e Requisitos da Fase 4
 
 Este repositório contém a implementação do microserviço core da aplicação easyOrder 4.0, que foi desenvolvida como parte do Tech Challenge da quarta etapa da Pós Tech de Arquitetura de Software (Turma SOAT8) da FIAP. 
@@ -66,13 +65,11 @@ O Projeto no SonarCloud pode ser acessado em:
 
 ## Cobertura de Testes
 
-<mark>-------------- Inserir info sobre Cobertura de Testes ---------------
 ![Cobertura Testes](docs/assets/captura-teste-cobertura.png)</mark>
 
 ## Roteiro de Testes BDD
 
-<mark>-------------- Inserir info sobre BDD ---------------
-![Teste BDD](docs/assets/captura-teste-bdd.png)<;mark>
+![Teste BDD](docs/assets/captura-teste-bdd.png)
 
 ## Configuração do CI/CD
 
