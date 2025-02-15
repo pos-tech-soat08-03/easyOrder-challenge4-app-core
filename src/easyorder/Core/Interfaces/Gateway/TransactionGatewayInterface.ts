@@ -3,7 +3,9 @@ import { TransactionEntity } from "../../Entity/TransactionEntity";
 export interface TransactionGatewayInterface {
   salvarTransaction(transaction: TransactionEntity): Promise<void>;
   buscarTransactionPorId(id: string): Promise<TransactionEntity | undefined>;
-  listarTransactionsPorPedido(idPedido: string): Promise<TransactionEntity[]>;
+  listarTransactionsPorPedido(
+    idPedido: string
+  ): Promise<TransactionEntity[] | undefined>;
   atualizarTransactionsPorId(
     id: string,
     transaction: TransactionEntity

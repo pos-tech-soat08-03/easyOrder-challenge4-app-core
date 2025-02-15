@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: easyorder-app-core-deployment
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: easyorder-app-core
@@ -30,4 +30,3 @@ spec:
         envFrom:
         - configMapRef:
             name: easyorder-app-core-configmap
-            optional: true

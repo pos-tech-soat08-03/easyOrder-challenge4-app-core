@@ -1,0 +1,1107 @@
+{
+	"info": {
+		"_postman_id": "df1b102e-5776-4aa3-8ebf-572849385f2c",
+		"name": "Roteiro Teste Fim a Fim (E2E) easyOrder 4.0",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38938562"
+	},
+	"item": [
+		{
+			"name": "Cliente",
+			"item": [
+				{
+					"name": "Cadastrar Cliente",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const {random} = require(\"lodash\")\r",
+									"const randomNumber = random(10000000000,99999999999)\r",
+									"pm.variables.set(\"cpfCliente\", randomNumber)\r",
+									"pm.collectionVariables.set(\"cpfCliente\", randomNumber)"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cpf\": \"{{cpfCliente}}\",\n    \"nome\": \"{{$randomFullName}}\",\n    \"email\": \"{{$randomEmail}}\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CLIENTE_URL}}/cliente/cadastrar",
+							"host": [
+								"{{CLIENTE_URL}}"
+							],
+							"path": [
+								"cliente",
+								"cadastrar"
+							]
+						},
+						"description": "Realiza o Cadastro de um novo Cliente com dados fornecidos no corpo da requisição.<br>  - Retorna o Id de Cliente como chave para continuidade no Pedido.<br>  - Não é permitido o cadastro de mais de um cliente com o mesmo CPF.<br><br>  [ Endpoint para integração ao sistema de autoatendimento ]"
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Cliente",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set(\"cpfCliente\", pm.collectionVariables.get(\"cpfCliente\"));\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"cpf\": \"{{cpfCliente}}\",\n  \"nome\": \"{{$randomFullName}}\",\n  \"email\": \"{{$randomEmail}}\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CLIENTE_URL}}/cliente/atualizar",
+							"host": [
+								"{{CLIENTE_URL}}"
+							],
+							"path": [
+								"cliente",
+								"atualizar"
+							]
+						},
+						"description": "Atualiza o Cadastro de um Cliente existente, através dos dados fornecidos no corpo da requisição.<br>  - Utiliza CPF como chave de identificação, retorna o detalhe do cadastro e Id do Cliente.<br><br>  [ Endpoint para integração aos sistemas administrativo e/ou de loja/autoatendimento ]"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Clientes",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{CLIENTE_URL}}/cliente/listar",
+							"host": [
+								"{{CLIENTE_URL}}"
+							],
+							"path": [
+								"cliente",
+								"listar"
+							]
+						},
+						"description": "Lista todos os clientes cadastrados.<br><br>  [ Endpoint para integração ao sistema administrativo ]"
+					},
+					"response": []
+				},
+				{
+					"name": "Autenticar Cliente",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"pm.collectionVariables.set(\"clienteId\", jsonData.cliente.id);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set(\"cpfCliente\", pm.collectionVariables.get(\"cpfCliente\"));\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{CLIENTE_URL}}/cliente/auth/:cpf",
+							"host": [
+								"{{CLIENTE_URL}}"
+							],
+							"path": [
+								"cliente",
+								"auth",
+								":cpf"
+							],
+							"variable": [
+								{
+									"key": "cpf",
+									"value": "{{cpfCliente}}",
+									"description": "(Required) CPF do Cliente sem pontuação"
+								}
+							]
+						},
+						"description": "Autenticar Cliente via CPF.<br>  - Retorna o Id do cliente, caso encontrado, como chave para continuidade no Pedido.<br><br>  [ Endpoint para integração ao sistema de autoatendimento ]"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Produto",
+			"item": [
+				{
+					"name": "Cadastrar Produto",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"pm.collectionVariables.set(\"productId\", jsonData.produto.id);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nome\": \"{{$randomProduct}}\",\n  \"descricao\": \"{{$randomProductName}}\",\n  \"preco\": \"{{$randomPrice}}\",\n  \"categoria\": \"LANCHE\",\n  \"imagemURL\": \"{{$randomFoodImage}}\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{PRODUTO_URL}}/produto/cadastrar",
+							"host": [
+								"{{PRODUTO_URL}}"
+							],
+							"path": [
+								"produto",
+								"cadastrar"
+							]
+						},
+						"description": "Realiza o Cadastro de um Novo Produto, através dos dados fornecidos no corpo da requisição.<br><br>[ Endpoint para integração aos sistemas administrativo e/ou de loja ]"
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Produto",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{productId}}\",\n  \"nome\": \"{{$randomProduct}}\",\n  \"descricao\": \"{{$randomProductName}}\",\n  \"preco\": \"{{$randomPrice}}\",\n  \"categoria\": \"LANCHE\",\n  \"imagemURL\": \"{{$randomFoodImage}}\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{PRODUTO_URL}}/produto/atualizar",
+							"host": [
+								"{{PRODUTO_URL}}"
+							],
+							"path": [
+								"produto",
+								"atualizar"
+							]
+						},
+						"description": "Atualiza o Cadastro de um Produto, através dos dados fornecidos no corpo da requisição.<br><br>[ Endpoint para integração aos sistemas administrativo e/ou de loja ]"
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar Produto",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{PRODUTO_URL}}/produto/buscar/:id",
+							"host": [
+								"{{PRODUTO_URL}}"
+							],
+							"path": [
+								"produto",
+								"buscar",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{productId}}",
+									"description": "(Required) ID do produto"
+								}
+							]
+						},
+						"description": "Busca um produto utilizando o Id.<br><br>[ Endpoint para integração aos sistemas administrativo e/ou de loja ]"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Produtos",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{PRODUTO_URL}}/produto/listar",
+							"host": [
+								"{{PRODUTO_URL}}"
+							],
+							"path": [
+								"produto",
+								"listar"
+							]
+						},
+						"description": "Lista todos os produtos cadastrados<br><br>[ Endpoint para integração aos sistemas administrativo e/ou de loja ]"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Produtos por Categoria",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{PRODUTO_URL}}/produto/listar/:categoria",
+							"host": [
+								"{{PRODUTO_URL}}"
+							],
+							"path": [
+								"produto",
+								"listar",
+								":categoria"
+							],
+							"variable": [
+								{
+									"key": "categoria",
+									"value": "LANCHE",
+									"description": "(Required) ID da Categoria"
+								}
+							]
+						},
+						"description": "Lista produtos por categoria<br><br>[ Endpoint para integração aos sistemas administrativo e/ou de loja ]"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Pedido",
+			"item": [
+				{
+					"name": "Cadastrar Pedido",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"pm.collectionVariables.set(\"pedidoId\", jsonData.pedido.id);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"cliente_identificado\": \"sim\",\n  \"clienteId\": \"{{clienteId}}\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CORE_URL}}/pedido",
+							"host": [
+								"{{CORE_URL}}"
+							],
+							"path": [
+								"pedido"
+							]
+						},
+						"description": "Início (rascunho) de novo Pedido. Retorna um Id de Pedido.<br>  - Pode considerar cliente identificado com ID (cliente já cadastrado) ou<br>  - Cliente não identificado (pedido sem associação a cliente)<br><br>  [ Endpoint para integração ao sistema de autoatendimento ]"
+					},
+					"response": []
+				},
+				{
+					"name": "Cancelar Pedido",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{CORE_URL}}/pedido/:pedidoId/cancelar",
+							"host": [
+								"{{CORE_URL}}"
+							],
+							"path": [
+								"pedido",
+								":pedidoId",
+								"cancelar"
+							],
+							"variable": [
+								{
+									"key": "pedidoId",
+									"value": "{{pedidoId}}",
+									"description": "(Required) "
+								}
+							]
+						},
+						"description": "Cancelamento de um Pedido com base no id.<br><br>  [ Endpoint para integração aos sistemas administrativo e/ou de loja ]"
+					},
+					"response": []
+				},
+				{
+					"name": "Cadastrar Pedido Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"pm.collectionVariables.set(\"pedidoId\", jsonData.pedido.id);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"cliente_identificado\": \"sim\",\n  \"clienteId\": \"{{clienteId}}\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CORE_URL}}/pedido",
+							"host": [
+								"{{CORE_URL}}"
+							],
+							"path": [
+								"pedido"
+							]
+						},
+						"description": "Início (rascunho) de novo Pedido. Retorna um Id de Pedido.<br>  - Pode considerar cliente identificado com ID (cliente já cadastrado) ou<br>  - Cliente não identificado (pedido sem associação a cliente)<br><br>  [ Endpoint para integração ao sistema de autoatendimento ]"
+					},
+					"response": []
+				},
+				{
+					"name": "Adicionar Combo ao Pedido",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"lancheId\": \"{{productId}}\",\n  \"bebidaId\": \"{{productId}}\",\n  \"sobremesaId\": \"{{productId}}\",\n  \"acompanhamentoId\": \"{{productId}}\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CORE_URL}}/pedido/:pedidoId/combo",
+							"host": [
+								"{{CORE_URL}}"
+							],
+							"path": [
+								"pedido",
+								":pedidoId",
+								"combo"
+							],
+							"variable": [
+								{
+									"key": "pedidoId",
+									"value": "{{pedidoId}}",
+									"description": "(Required) ID do pedido"
+								}
+							]
+						},
+						"description": "Adiciona um Combo ao Pedido. Precisa de um Produto válido associado ao Combo.<br><br>  [ Endpoint para integração ao sistema de autoatendimento ]"
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar Pedido",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{CORE_URL}}/pedido/:pedidoId",
+							"host": [
+								"{{CORE_URL}}"
+							],
+							"path": [
+								"pedido",
+								":pedidoId"
+							],
+							"variable": [
+								{
+									"key": "pedidoId",
+									"value": "{{pedidoId}}",
+									"description": "(Required) ID do pedido"
+								}
+							]
+						},
+						"description": "Busca um Pedido por ID<br><br>  [ Endpoint para integração aos sistemas administrativo e/ou de loja ]"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Pedidos por status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{CORE_URL}}/pedido/listar/:statusPedido?page=1&limit=10&orderField=DATA_CADASTRO&orderDirection=DESC",
+							"host": [
+								"{{CORE_URL}}"
+							],
+							"path": [
+								"pedido",
+								"listar",
+								":statusPedido"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Página"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Limite de registros por página"
+								},
+								{
+									"key": "orderField",
+									"value": "DATA_CADASTRO",
+									"description": "Campo de ordenação (This can only be one of DATA_CADASTRO)"
+								},
+								{
+									"key": "orderDirection",
+									"value": "DESC",
+									"description": "Direção da ordenação (This can only be one of ASC,DESC)"
+								}
+							],
+							"variable": [
+								{
+									"key": "statusPedido",
+									"value": "EM_ABERTO",
+									"description": "(Required) Status do pedido (This can only be one of EM_ABERTO,AGUARDANDO_PAGAMENTO,RECEBIDO,EM_PREPARACAO,PRONTO,FINALIZADO,CANCELADO)"
+								}
+							]
+						},
+						"description": "Lista pedidos por status<br><br>  [ Endpoint para integração aos sistemas administrativo e/ou de loja ]"
+					},
+					"response": []
+				},
+				{
+					"name": "Checkout Pedido",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{CORE_URL}}/pedido/:pedidoId/checkout",
+							"host": [
+								"{{CORE_URL}}"
+							],
+							"path": [
+								"pedido",
+								":pedidoId",
+								"checkout"
+							],
+							"variable": [
+								{
+									"key": "pedidoId",
+									"value": "{{pedidoId}}",
+									"description": "(Required) ID do pedido"
+								}
+							]
+						},
+						"description": "Checkout de um pedido e envio para o serviço de Pagamento<br><br>  [ Endpoint para integração ao sistema de autoatendimento / PDV ]"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Pagamento",
+			"item": [
+				{
+					"name": "[Deprecated] Confirmar Pagamento Pedido",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{CORE_URL}}/pedido/:pedidoId/confirmacao-pagamento",
+							"host": [
+								"{{CORE_URL}}"
+							],
+							"path": [
+								"pedido",
+								":pedidoId",
+								"confirmacao-pagamento"
+							],
+							"variable": [
+								{
+									"key": "pedidoId",
+									"value": "{{pedidoId}}",
+									"description": "(Required) ID do pedido"
+								}
+							]
+						},
+						"description": "Baixa manual de um pedido pendente de pagamento.<br>  - Endpoint exclusivo para testes locais<br><br>  ! Atenção: Este endpoint foi descontinuado, sendo substituído por /pagamento/webhook<br><br>  [ Endpoint para integração ao gateway de pagamentos - Externo]"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Transações",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"pm.collectionVariables.set(\"transacaoId\", jsonData.transactions.id);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CORE_URL}}/pagamento/listar-transacoes/:pedidoId",
+							"host": [
+								"{{CORE_URL}}"
+							],
+							"path": [
+								"pagamento",
+								"listar-transacoes",
+								":pedidoId"
+							],
+							"variable": [
+								{
+									"key": "pedidoId",
+									"value": "{{pedidoId}}",
+									"description": "(Required) "
+								}
+							]
+						},
+						"description": "Obtém a lista de Transações associadas a um id de Pedido.<br>  - Utilizada para fins de simulação e consulta de transações pela adninistração.<br><br>  [ Endpoint para integração aos sistemas administrativo e/ou de loja ]"
+					},
+					"response": []
+				},
+				{
+					"name": "Webhook para Confirmação de Pagamento (Transação)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{transacaoId}}\",\n  \"status\": \"approved\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CORE_URL}}/pagamento/webhook/",
+							"host": [
+								"{{CORE_URL}}"
+							],
+							"path": [
+								"pagamento",
+								"webhook",
+								""
+							]
+						},
+						"description": "Captura o retorno de status de transação a partir de webhook disparado pelo Serviço de Pagamento.<br>  - Pode ser utilizado para simulação, nesse caso informe o id e status de aprovação no corpo da requisição<br><br>  [ Endpoint para integração ao gateway de pagamentos - Externo]"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Preparação",
+			"item": [
+				{
+					"name": "Buscar o próximo Pedido",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{CORE_URL}}/preparacao/pedido/proximo",
+							"host": [
+								"{{CORE_URL}}"
+							],
+							"path": [
+								"preparacao",
+								"pedido",
+								"proximo"
+							]
+						},
+						"description": "Busca o próximo pedido para preparação<br><br>  [ Endpoint para integração aos sistemas administrativo e/ou de loja ]"
+					},
+					"response": []
+				},
+				{
+					"name": "Iniciar Preparação de Pedido",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{CORE_URL}}/preparacao/pedido/:pedidoId/iniciar-preparacao",
+							"host": [
+								"{{CORE_URL}}"
+							],
+							"path": [
+								"preparacao",
+								"pedido",
+								":pedidoId",
+								"iniciar-preparacao"
+							],
+							"variable": [
+								{
+									"key": "pedidoId",
+									"value": "{{pedidoId}}",
+									"description": "(Required) ID do pedido"
+								}
+							]
+						},
+						"description": "Inicia a preparação de um pedido<br><br>  [ Endpoint para integração aos sistemas administrativo e/ou de loja ]"
+					},
+					"response": []
+				},
+				{
+					"name": "Finalizar Preparação de Pedido",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{CORE_URL}}/preparacao/pedido/:pedidoId/finalizar-preparacao",
+							"host": [
+								"{{CORE_URL}}"
+							],
+							"path": [
+								"preparacao",
+								"pedido",
+								":pedidoId",
+								"finalizar-preparacao"
+							],
+							"variable": [
+								{
+									"key": "pedidoId",
+									"value": "{{pedidoId}}",
+									"description": "(Required) ID do pedido"
+								}
+							]
+						},
+						"description": "Finaliza a preparação de um pedido<br><br>  [ Endpoint para integração aos sistemas administrativo e/ou de loja ]"
+					},
+					"response": []
+				},
+				{
+					"name": "Entregar Pedido",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{CORE_URL}}/preparacao/pedido/:pedidoId/entregar",
+							"host": [
+								"{{CORE_URL}}"
+							],
+							"path": [
+								"preparacao",
+								"pedido",
+								":pedidoId",
+								"entregar"
+							],
+							"variable": [
+								{
+									"key": "pedidoId",
+									"value": "{{pedidoId}}",
+									"description": "(Required) ID do pedido"
+								}
+							]
+						},
+						"description": "Entrega um pedido preparado<br><br>  [ Endpoint para integração aos sistemas administrativo e/ou de loja ]"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "cpfCliente",
+			"value": ""
+		},
+		{
+			"key": "productId",
+			"value": ""
+		},
+		{
+			"key": "clienteId",
+			"value": ""
+		},
+		{
+			"key": "pedidoId",
+			"value": ""
+		},
+		{
+			"key": "transacaoId",
+			"value": ""
+		}
+	]
+}
