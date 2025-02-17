@@ -30,8 +30,10 @@ Repositório da solução no Github:
   - Cliente https://github.com/pos-tech-soat08-03/easyOrder-challenge4-app-cliente
   - Core (este repo) https://github.com/pos-tech-soat08-03/easyOrder-challenge4-app-core
    
-📹 Link do Vídeo com a explicação sobre o projeto [Link youtube](https://www.youtube.com/watch?v=XXXXXXXXXXX)
+📹 Link do Vídeo com a explicação do Tech Challenge 4 [https://youtu.be/ZGp1Po11P9E](https://www.youtube.com/watch?v=ZGp1Po11P9E)
 
+&nbsp;
+&nbsp;
 ## Microserviço Core (Pedido, Pagamento e Preparação) e Requisitos da Fase 4
 
 Este repositório contém a implementação do microserviço core da aplicação easyOrder 4.0, que foi desenvolvida como parte do Tech Challenge da quarta etapa da Pós Tech de Arquitetura de Software (Turma SOAT8) da FIAP. 
