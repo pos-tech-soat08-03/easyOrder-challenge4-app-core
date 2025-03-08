@@ -17,7 +17,7 @@
   "author": "Grupo 3 SOAT8",
   "license": "ISC",
   "dependencies": {
-    "axios": "^1.7.9",
+    "axios": "^1.8.2",
     "dotenv-cli": "^7.4.1",
     "express": "^4.19.2",
     "mysql2": "^3.12.0",
